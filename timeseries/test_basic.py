@@ -6,10 +6,10 @@ class MyTest(unittest.TestCase):
 
 	def test_noArgument(self):
 		'''
-		Verify that empty timeseries is constructed when no data argument is given
+		Verify that an error is raised when no values argument is passed
 		'''
-		ts = TimeSeries()
-		self.assertEqual(ts.timeseries, [])
+		with self.assertRaises(TypeError):
+			ts = TimeSeries()
 
 	def test_emptyList(self):
 		'''
@@ -23,7 +23,7 @@ class MyTest(unittest.TestCase):
 		Verify that "unrealized" sequences can be parsed as argument
 		'''
 		ts = TimeSeries(range(1, 10, 2))
-		self.assertEqual(ts.timeseries, [1, 3, 5, 7, 9])
+		self.assertEqual(ts.timeseries, [(0, 1), (1, 3), (2, 5), (3, 7), (4, 9)])
 
 	def test_nonNumeric(self):
 		'''
