@@ -2,6 +2,7 @@
 
 import itertools
 import reprlib
+import numpy as np
 
 def isNumericList(seq):
 	'''
@@ -75,6 +76,24 @@ class TimeSeries:
 		"""
 		return len(self.timeseries)
 
+	def __iter__(self):
+		"""
+		Returns an Iterator over values
+		"""
+		return iter(self._values)
+
+	def itertimes(self):
+		"""
+		Returns an Iterator over times
+		"""
+		return iter(self._times)
+
+	def iteritems(self):
+		"""
+		Returns an Iterator over values, time pair
+		"""
+		return iter(self.timeseries)
+
 	def __getitem__(self, i):
 		""" 
 		Returns the ith value of the TimeSeries object
@@ -147,3 +166,20 @@ class TimeSeries:
 			components = reprlib.repr(list(itertools.islice(self.timeseries,0,5)))
 			components = components[:components.find(']')]
 			return '{}, ...]'.format(components)
+
+class ArrayTimeSeries(TimeSeries):
+	def __init__(self, values, times=None):
+		if len(values) == 0:
+			self._times = np.array()
+			self._values = np.array()
+			self.timeseries = np.array()
+		else:
+			assert isNumericList(values), "Values sequence must be only contain numerical entries"
+			self._values = np.array(values)
+			if times:
+				assert isNumericList(times), "Time sequence must be only contain numerical entries"
+				assert all(times[i] <= times[i+1] for i in range(len(times)-1)), "Time sequence must be ordered"
+				self._times = np.array([t for t in times])
+			else:
+				self._times = np.arange(0,len(self._values))
+			self.timeseries = np.array(list(zip(self._times, self._values)))
