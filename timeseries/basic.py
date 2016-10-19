@@ -2,6 +2,7 @@
 
 import itertools
 import reprlib
+import numpy as np
 
 def isNumericList(seq):
 	'''
@@ -107,7 +108,21 @@ class TimeSeries:
 		"""
 		self._values[i] = value
 		self.timeseries[i] = (self._times[i], value)
+        
+    def __iter__(self):
+        """
+        PLACE HOLDER FOR ITERATING OVER VALUES
+        """
 
+    def itertimes(self):
+        """
+        PLACE HOLDER FOR ITERATING OVER TIMES
+        """        
+
+    def iteritems(self):
+        """
+        PLACE HOLDER FOR ITERATING OVER TIMES-VALUE PAIRS
+        """                
 	def __repr__(self):
 		'''
 		This function returns the formal string representation of a TimeSeries object. We define the formal string
@@ -147,3 +162,12 @@ class TimeSeries:
 			components = reprlib.repr(list(itertools.islice(self.timeseries,0,5)))
 			components = components[:components.find(']')]
 			return '{}, ...]'.format(components)
+
+class ArrayTimeSeries(TimeSeries):
+    """
+    This class inherits TimeSeries class and uses numpy.array to store the timeseries data
+    """
+    
+    """
+    PLACE HOLDERS FOR DOCTESTS
+    """
