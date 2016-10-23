@@ -183,3 +183,20 @@ class ArrayTimeSeries(TimeSeries):
 			else:
 				self._times = np.arange(0,len(self._values))
 			self.timeseries = np.array(list(zip(self._times, self._values)))
+
+	def interpolate(self, times):
+		assert len(self._times) >= 1, "require at least one time-value pair for interpolation"
+		assert isNumericList(times), "Time sequence must be only contain numerical entries"
+		interpolated = []
+		for t in times:
+			if t <= self._times[0]:
+				interpolated.append(self._times[0])
+			elif t >= self._times[-1]:
+				interpolated.append(self._times[-1])
+			else:
+				prev_index = np.sum(self._times < t) - 1
+				lin_slope = ((self._values[prev_index + 1] - self._values[prev_index])/
+					     (self._times[prev_index + 1] - self._times[prev_index]))
+				interpolated_val = self._values[prev_index] + (t - self._times[prev_index]) * lin_slope
+				interpolated.append(interpolated_val)
+		return interpolated
