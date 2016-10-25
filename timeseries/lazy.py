@@ -7,6 +7,14 @@ class LazyOperation:
         self._args = args_init
         self._kwargs = kwargs_init
         
+    # need an equivalence method
+    def __eq__(self,other):
+        return_value = (self._kwargs == other._kwargs) and (self._args == other._args)
+        return_value = return_value and (id(other._function) == id(self._function))
+        return return_value
+    
+    # test out
+        
     def eval(self):
         kwargs_final = []
         args_final = []
