@@ -167,6 +167,74 @@ class TimeSeries:
 			components = components[:components.find(']')]
 			return '{}, ...]'.format(components)
 
+	### Newly added Part 4
+	def __contains__(self, value):
+		return (value in self._values)
+
+	def values(self):
+		return np.array(self._values)
+
+	def itervalues(self):
+		return iter(self.values())
+
+	def times(self):
+		return np.array(self._times)
+
+	def items(self):
+		return self.timeseries
+
+	def __abs__(self):
+		return math.sqrt(sum(x * x for x in self.values()))
+
+	def __bool__(self):
+		return bool(abs(self))
+
+	def __neg__(self):
+		return TimeSeries([-x for x in self._values], [x for x in self._times])
+
+	def __pos__(self):
+		return TimeSeries(self._values, self._times)
+
+	@staticmethod
+	def _check_match_helper(self , rhs):
+		if (not self.hastime) or (not rhs.hastime):
+			raise NotImplemented
+		if not self._times==rhs._times:
+			raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+
+	def __add__(self, rhs):
+		if isinstance(rhs, TimeSeries):
+			TimeSeries._check_match_helper(self, rhs)
+			pairs = zip(self._values, rhs._values)
+			return TimeSeries([a + b for a, b in pairs], [x for x in self._times])
+		else:
+			raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+	def __sub__(self, rhs):
+		if isinstance(rhs, TimeSeries):
+			TimeSeries._check_match_helper(self, rhs)
+			pairs = zip(self._values, rhs._values)
+			return TimeSeries([a - b for a, b in pairs], [x for x in self._times])
+		else:
+			raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+	def __mul__(self, rhs):
+		if isinstance(rhs, TimeSeries):
+			TimeSeries._check_match_helper(self, rhs)
+			pairs = zip(self._values, rhs._values)
+			return TimeSeries([a * b for a, b in pairs], [x for x in self._times])
+		else:
+			raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+	def __eq__(self, rhs):
+		if isinstance(rhs, TimeSeries):
+			TimeSeries._check_match_helper(self, rhs)
+			pairs = zip(self._values, rhs._values)
+			return all([a==b for a, b in pairs])
+		else:
+			raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+
 class ArrayTimeSeries(TimeSeries):
 	def __init__(self, values, times=None):
 		if len(values) == 0:
