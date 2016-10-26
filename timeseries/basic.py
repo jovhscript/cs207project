@@ -64,6 +64,7 @@ class TimeSeries:
 			if times:
 				assert isNumericList(times), "Time sequence must be only contain numerical entries"
 				assert all(times[i] <= times[i+1] for i in range(len(times)-1)), "Time sequence must be ordered"
+				assert len(times) == len(values), "Time and Value sequences must have the same lengths"
 				self._times = [t for t in times]
 			else:
 				self._times = range(0,len(self._values))

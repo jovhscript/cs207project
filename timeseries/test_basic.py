@@ -32,6 +32,13 @@ class MyTest(unittest.TestCase):
 		with self.assertRaises(AssertionError):
 			TimeSeries(list('abcd'))
 
+	def test_valTimeEqLen(self):
+		'''
+		Checks that the value sequence and time sequence have the same lengths
+		'''
+		with self.assertRaises(AssertionError):
+			TimeSeries([1, 2, 3], [1])
+
 	def test_zeroLen(self):
 		'''
 		Checks we correctly render 0 length
