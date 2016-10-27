@@ -237,21 +237,16 @@ class TimeSeries:
 
 
 class ArrayTimeSeries(TimeSeries):
-	def __init__(self, values, times=None):
-		if len(values) == 0:
-			self._times = np.array()
-			self._values = np.array()
-			self.timeseries = np.array()
+	def __init__(self, times, values):
+		assert isNumericList(values), "Values sequence must be only contain numerical entries"
+		self._values = np.array(values)
+		if times:
+			assert isNumericList(times), "Time sequence must be only contain numerical entries"
+			assert all(times[i] <= times[i+1] for i in range(len(times)-1)), "Time sequence must be ordered"
+			self._times = np.array([t for t in times])
 		else:
-			assert isNumericList(values), "Values sequence must be only contain numerical entries"
-			self._values = np.array(values)
-			if times:
-				assert isNumericList(times), "Time sequence must be only contain numerical entries"
-				assert all(times[i] <= times[i+1] for i in range(len(times)-1)), "Time sequence must be ordered"
-				self._times = np.array([t for t in times])
-			else:
-				self._times = np.arange(0,len(self._values))
-			self.timeseries = np.array(list(zip(self._times, self._values)))
+			self._times = np.arange(0,len(self._values))
+		self.timeseries = np.array(list(zip(self._times, self._values)))
 
 	def interpolate(self, times):
 		assert len(self._times) >= 1, "require at least one time-value pair for interpolation"
