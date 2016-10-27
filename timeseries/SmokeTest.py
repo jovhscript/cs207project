@@ -1,4 +1,4 @@
-from basic import TimeSeries
+from series import TimeSeries
 
 # projecteuler.net/problem=1
 # Note: this is decidely *not* the intended purpose of this class.

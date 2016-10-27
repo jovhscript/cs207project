@@ -1,6 +1,6 @@
 
 import unittest
-from basic import TimeSeries
+from series import TimeSeries
 
 class MyTest(unittest.TestCase): 
 
