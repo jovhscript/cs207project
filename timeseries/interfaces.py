@@ -26,51 +26,11 @@ class TimeSeriesInterface(abc.ABC):
     	time series must be iterable over values.
     	"""
 
-    def __len__(self):
-        """ 
-        Returns the length of the TimeSeries object, which corresponds to the length of the timeseries attribute
-        """
-        return len(self.timeseries)
-
+    @abc.abstractmethod
     def __repr__(self):
-        '''
-        This function returns the formal string representation of a TimeSeries object. We define the formal string
-        representations by:
-
-        Type(len=XX, timeseries=XX) 
-
-        Notes
-        -----
-
-        - If the TimeSeries contains more than 5 elements, we only print the first 5 elements.
-        '''
-        class_name = type(self).__name__
-        length = len(self.timeseries)
-        if length <= 5:
-            return '{}(len = {}; timeseries = {})'.format(class_name, length, self.timeseries)
-        else:
-            components = reprlib.repr(list(itertools.islice(self.timeseries,0,5)))
-            components = components[:components.find(']')]
-            return '{}(timeseries = {}, ...]; len = {})'.format(class_name, length, components)
-
-    def __str__(self):
-        '''
-        This function returns the informal string representation of a TimeSeries object which only correponds to the
-        string representation of the `timeseries` attribute.
-
-        Notes
-        -----
-
-        - If the TimeSeries contains more than 5 elements, we only print the first 5 elements.
-        '''
-
-        length = len(self.timeseries)
-        if length <= 5:
-            return str(self.timeseries)
-        else:
-            components = reprlib.repr(list(itertools.islice(self.timeseries,0,5)))
-            components = components[:components.find(']')]
-            return '{}, ...]'.format(components)
+        """
+        returns a string representation of the object
+        """
 
     @abc.abstractmethod
     def itertimes(self):
@@ -138,6 +98,52 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
     def __contains__(self, value):
         return (value in self._values)
 
+    def __len__(self):
+        """ 
+        Returns the length of the TimeSeries object, which corresponds to the length of the timeseries attribute
+        """
+        return len(self.timeseries)
+
+    def __repr__(self):
+        '''
+        This function returns the formal string representation of a TimeSeries object. We define the formal string
+        representations by:
+
+        Type(len=XX, timeseries=XX) 
+
+        Notes
+        -----
+
+        - If the TimeSeries contains more than 5 elements, we only print the first 5 elements.
+        '''
+        class_name = type(self).__name__
+        length = len(self.timeseries)
+        if length <= 5:
+            return '{}(len = {}; timeseries = {})'.format(class_name, length, self.timeseries)
+        else:
+            components = reprlib.repr(list(itertools.islice(self.timeseries,0,5)))
+            components = components[:components.find(']')]
+            return '{}(timeseries = {}, ...]; len = {})'.format(class_name, length, components)
+
+    def __str__(self):
+        '''
+        This function returns the informal string representation of a TimeSeries object which only correponds to the
+        string representation of the `timeseries` attribute.
+
+        Notes
+        -----
+
+        - If the TimeSeries contains more than 5 elements, we only print the first 5 elements.
+        '''
+
+        length = len(self.timeseries)
+        if length <= 5:
+            return str(self.timeseries)
+        else:
+            components = reprlib.repr(list(itertools.islice(self.timeseries,0,5)))
+            components = components[:components.find(']')]
+            return '{}, ...]'.format(components)
+
     def values(self):
         return np.array(self._values)
 
@@ -200,3 +206,10 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
             return all([a==b for a, b in pairs])
         else:
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+class StreamTimeSeriesInterface(TimeSeriesInterface):
+    def produce(self, chunk=1):
+        """
+        produces a set of 'chunk' ew elements into the timeseries whenever it is called
+        """
+        pass
