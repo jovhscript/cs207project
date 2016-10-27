@@ -3,7 +3,7 @@
 import itertools
 import reprlib
 import numpy as np
-import abstractclasses 
+import interfaces 
 
 def isNumericList(seq):
 	'''
@@ -16,7 +16,7 @@ def isNumericList(seq):
 		except:
 			return False
 
-class TimeSeries(abstractclasses.SizedContainerTimeSeriesInterface):
+class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
 	"""This TimeSeries class stores a single, ordered set of numerical data as a Python list."""
 	def __init__(self, values, times=None):
 		"""
@@ -71,7 +71,7 @@ class TimeSeries(abstractclasses.SizedContainerTimeSeriesInterface):
 				self._times = range(0,len(self._values))
 			self.timeseries = list(zip(self._times, self._values))
 
-class ArrayTimeSeries(abstractclasses.SizedContainerTimeSeriesInterface):
+class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
 	def __init__(self, times, values):
 		assert isNumericList(values), "Values sequence must be only contain numerical entries"
 		self._values = np.array([v for v in values])
