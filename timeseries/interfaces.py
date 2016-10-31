@@ -224,38 +224,8 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
 class StreamTimeSeriesInterface(TimeSeriesInterface):
+   @abc.abstractmethod
     def produce(self, chunk=1):
         """
         produces a set of 'chunk' ew elements into the timeseries whenever it is called
         """
-        pass
-        
-class SimulatedTimeSeries(StreamTimeSeriesInterface):
-    
-    def __init__(self, gen):
-        self._gen = gen
-    
-    def produce(self, chunk=1):
-        val_array = []
-        try:
-            for i in range(0, chunk):
-                next_value = next(self._gen)
-                val_array.append(next_value)
-        except:
-            pass
-        finally:
-            return val_array
-    
-    def itertimes(self):
-        return self.produce()[0]
-    
-    def iteritems(self):
-        return self.produce()[1]
-    
-    def __iter__(self):
-        return self
-    
-    def __next__(self):
-        return self.produce()
-        
-    
