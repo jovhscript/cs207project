@@ -2,6 +2,7 @@ import itertools
 import reprlib
 import numpy as np
 import abc
+from .lazy import *
 
 class TimeSeriesInterface(abc.ABC):
     """
@@ -167,6 +168,21 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
 
     def __pos__(self):
         return TimeSeries(self._values, self._times)
+       
+    @property
+    @lazy
+    def lazy(self):
+        return self
+
+    def mean(self):
+        if(len(self._values) == 0):
+            raise ValueError("List must have at least 1 value.")
+        return np.mean(self._values)
+        
+    def std(self):
+        if(len(self._values) == 0):
+            raise ValueError("List must have at least 1 value.")
+        return np.std(self._values)
 
     @staticmethod
     def _check_match_helper(self , rhs):
@@ -213,3 +229,36 @@ class StreamTimeSeriesInterface(TimeSeriesInterface):
         produces a set of 'chunk' ew elements into the timeseries whenever it is called
         """
         pass
+        
+class SimulatedTimeSeries(StreamTimeSeriesInterface):
+    
+    def __init__(self, gen):
+        self._gen = gen
+    
+    def produce(self, chunk=1):
+        
+        for i in range(0, chunk):
+            next_value = next(self._gen)
+            if type(next_value) == tuple:
+                return next_value
+            else:
+                
+                # NOT SURE WHAT TO IMPLEMENT HERE
+                
+                return 0;
+        
+        pass
+    
+    def itertimes(self):
+        return self.produce()[0]
+    
+    def iteritems(self):
+        return self.produce()[1]
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        return self.produce()
+        
+    
