@@ -236,18 +236,15 @@ class SimulatedTimeSeries(StreamTimeSeriesInterface):
         self._gen = gen
     
     def produce(self, chunk=1):
-        
-        for i in range(0, chunk):
-            next_value = next(self._gen)
-            if type(next_value) == tuple:
-                return next_value
-            else:
-                
-                # NOT SURE WHAT TO IMPLEMENT HERE
-                
-                return 0;
-        
-        pass
+        val_array = []
+        try:
+            for i in range(0, chunk):
+                next_value = next(self._gen)
+                val_array.append(next_value)
+        except:
+            pass
+        finally:
+            return val_array
     
     def itertimes(self):
         return self.produce()[0]
