@@ -4,7 +4,8 @@ import itertools
 import reprlib
 import numpy as np
 import interfaces
-from math import sqrt 
+from math import sqrt
+import types
 
 def isNumericList(seq):
     '''
@@ -97,6 +98,7 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         -----
 
         - Errors will be raised if values or times have non numerical entries or if the times are not in ascending order
+        - If len(times) < len(values), the extra times are dropped
         Examples:
         ---------
 
@@ -106,15 +108,20 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
                [2, 4],
                [3, 9]])
         """
-        assert isNumericList(values), "Values sequence must be only contain numerical entries"
-        self._values = np.array([v for v in values])
-        if times:
-            assert isNumericList(times), "Time sequence must be only contain numerical entries"
-            assert all(times[i] <= times[i+1] for i in range(len(times)-1)), "Time sequence must be ordered"
-            self._times = np.array([t for t in times])
+        if len(times) == len(values) and len(times) == 0:
+            self._times = np.array([])
+            self._values = np.array([])
+            self.timeseries = np.array([])
         else:
-            self._times = np.arange(0,len(self._values))
-        self.timeseries = np.array(list(zip(self._times, self._values)))
+            assert isNumericList(values), "Values sequence must be only contain numerical entries"
+            self._values = np.array([v for v in values])
+            if times:
+                assert isNumericList(times), "Time sequence must be only contain numerical entries"
+                assert all(times[i] <= times[i+1] for i in range(len(times)-1)), "Time sequence must be ordered"
+                self._times = np.array([t for t in times])
+            else:
+                self._times = np.arange(0,len(self._values))
+            self.timeseries = np.array(list(zip(self._times, self._values)))
 
     def interpolate(self, times):
         assert len(self._times) >= 1, "require at least one time-value pair for interpolation"
@@ -166,6 +173,8 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
         [(0, 0), (1, 1), (2, 4), (3, 9), (4, 16)]
 
         """
+        if not isinstance(gen, types.GeneratorType):
+            raise TypeError('Must parse in a generator object.')
         self._gen = gen
     
     def produce(self, chunk=1):
@@ -198,13 +207,12 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
         Note:
         ----
 
-        If the original generator did not generate times, the function links each (value, mean) pair with a index starting at 1.
+        If the original generator did not generate times, the function links each (value, mean) pair with a index starting at 0.
         """
         def inner_mean(iterator=self._gen):
             n = 0
             mu = 0
             for value in iterator:
-                print(value)
                 n += 1
                 if isinstance(value, tuple):
                     delta = value[1] - mu
@@ -223,7 +231,7 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
         Note:
         ----
 
-        If the original generator did not generate times, the function links each (value, mean, std_dev) pair with a index starting at 1.
+        If the original generator did not generate times, the function links each (value, mean, std_dev) pair with a index starting at 0.
         """
         def inner_dev(iterator=self._gen):
             n = 0
@@ -242,14 +250,14 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
                         mu = old_mu + (value - old_mu)/n
                         dev_accum += (value - old_mu)*(value - mu) 
                         stddev = sqrt(dev_accum/(n-1))
-                        yield (n, value, mu, stddev)
+                        yield (n-1, value, mu, stddev)
                 else:
                     if isinstance(value, tuple):
                         mu = value[1]
                         yield (value[0], value[1], mu, 0)
                     else:
                         mu = value
-                        yield (n, value, mu, 0)
+                        yield (n-1, value, mu, 0)
         return SimulatedTimeSeries(inner_dev())
 
     def __repr__(self):
