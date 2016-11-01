@@ -117,12 +117,13 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
             return val_array
     
     def iteritems(self):
-        return self.produce()[1]
+        return self._gen
     
     def __iter__(self):
         return self
     
     def __next__(self):
+<<<<<<< HEAD
         return self.produce()
 
     def online_mean(self):
@@ -157,4 +158,7 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
                     mu = value
             yield (n, value, mu, 0.0) 
         return SimulatedTimeSeries(inner())
+=======
+        return self.produce()[1]
+>>>>>>> omar_branch2
         

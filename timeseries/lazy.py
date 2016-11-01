@@ -85,5 +85,3 @@ def add(a, b):
     
 lazy_add = lazy(add)
 lazy_mul = lazy(multiply)
-
-print(isinstance( lazy_add(1,2), LazyOperation ) == True )
