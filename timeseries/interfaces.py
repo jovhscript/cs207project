@@ -97,6 +97,9 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
         self.timeseries[i] = (self._times[i], value)
 
     def __contains__(self, value):
+        """
+        Returns a boolean value indicating if the instance contains a certain value
+        """
         return (value in self._values)
 
     def __len__(self):
@@ -146,27 +149,51 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
             return '{}, ...]'.format(components)
 
     def values(self):
+        """
+        Returns a numpy array of the values of a timeseries
+        """
         return np.array(self._values)
 
     def itervalues(self):
+        """
+        Returns an iterator of the numpy array of the values of a timeseries
+        """
         return iter(self.values())
 
     def times(self):
+        """
+        Returns a numpy array of the times of a timeseries
+        """
         return np.array(self._times)
 
     def items(self):
+        """
+        Returns an iterator of the numpy array of the times of a timeseries
+        """
         return self.timeseries
 
     def __abs__(self):
+        """
+        Returns the 2-norm of the timeseries values
+        """
         return math.sqrt(sum(x * x for x in self.values()))
 
     def __bool__(self):
+        """
+        Returns a boolean value indicating if the 2-norm of the timeseries values is zero
+        """
         return bool(abs(self))
 
     def __neg__(self):
-        return TimeSeries([-x for x in self._values], [x for x in self._times])
+        """
+        Returns a timeseries instance with each value being the negative of the original
+        """
+        return TimeSeries([-x for x in self._values], self._times)
 
     def __pos__(self):
+        """
+        Returns a timeseries instance with each value preserving the original sign
+        """
         return TimeSeries(self._values, self._times)
        
     @property
@@ -186,12 +213,26 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
 
     @staticmethod
     def _check_match_helper(self , rhs):
+        """
+        Helper function to check if two timeseries have matching times
+        
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; otherwise a ValueError will be raised
+        """
         if (not self.hastime) or (not rhs.hastime):
             raise NotImplemented
         if not self._times==rhs._times:
             raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
 
     def __add__(self, rhs):
+        """
+        Element-wise addition of two timeseries instances
+        
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
         if isinstance(rhs, TimeSeries):
             TimeSeries._check_match_helper(self, rhs)
             pairs = zip(self._values, rhs._values)
@@ -200,6 +241,13 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
     def __sub__(self, rhs):
+        """
+        Element-wise subtraction of two timeseries instances
+        
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
         if isinstance(rhs, TimeSeries):
             TimeSeries._check_match_helper(self, rhs)
             pairs = zip(self._values, rhs._values)
@@ -208,6 +256,13 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
     def __mul__(self, rhs):
+        """
+        Element-wise multiplication of two timeseries instances
+        
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
         if isinstance(rhs, TimeSeries):
             TimeSeries._check_match_helper(self, rhs)
             pairs = zip(self._values, rhs._values)
@@ -216,6 +271,13 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
     def __eq__(self, rhs):
+        """
+        Check if two timeseries instances are the same
+        
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
         if isinstance(rhs, TimeSeries):
             TimeSeries._check_match_helper(self, rhs)
             pairs = zip(self._values, rhs._values)
