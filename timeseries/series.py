@@ -124,4 +124,37 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
     
     def __next__(self):
         return self.produce()
+
+    def online_mean(self):
+        def inner(iterator=self._gen):
+            n = 0
+            mu = 0
+            for value in iterator:
+                n += 1
+                if isinstance(value, tuple):
+                    delta = value[1] - mu
+                    mu = mu + delta/n
+                    yield (value[0], value[1], mu)
+                else:
+                    delta = value - mu
+                    mu = mu + delta/n
+                    yield (n, value[1], mu)
+        return SimulatedTimeSeries(inner())
+
+    def online_mean_dev(iterator):
+    	def inner(iterator=self._gen):
+		    n = 0
+		    dev_accum = 0.0
+		   	for value in iterator:
+		        n += 1
+		        if n > 1:
+		            old_mu = mu
+		            mu = old_mu + (value - old_mu)/n
+		            dev_accum += (value - old_mu)*(value - mu) 
+		            stddev = sqrt(dev_accum/(n-1))
+		            yield (n, value, mu, stddev)
+		        else:
+		            mu = value
+            yield (n, value, mu, 0.0) 
+        return SimulatedTimeSeries(inner())
         
