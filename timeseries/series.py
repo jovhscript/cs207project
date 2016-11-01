@@ -100,7 +100,7 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
 				interpolated.append(interpolated_val)
 		return interpolated
 
-class SimulatedTimeSeries(StreamTimeSeriesInterface):
+class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
     
     def __init__(self, gen):
         self._gen = gen
@@ -116,9 +116,6 @@ class SimulatedTimeSeries(StreamTimeSeriesInterface):
         finally:
             return val_array
     
-    def itertimes(self):
-        return self.produce()[0]
-    
     def iteritems(self):
         return self.produce()[1]
     
@@ -127,3 +124,4 @@ class SimulatedTimeSeries(StreamTimeSeriesInterface):
     
     def __next__(self):
         return self.produce()
+        
