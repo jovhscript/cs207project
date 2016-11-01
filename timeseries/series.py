@@ -78,6 +78,7 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         self._values = np.array([v for v in values])
         if times:
             assert isNumericList(times), "Time sequence must be only contain numerical entries"
+            assert len(times) == len(values), "Time and value sequences must have the same lengths"
             assert all(times[i] <= times[i+1] for i in range(len(times)-1)), "Time sequence must be ordered"
             self._times = np.array([t for t in times])
         else:
@@ -109,8 +110,8 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         assert len(self._times) >= 1, "require at least one time-value pair for interpolation"
         assert isNumericList(times), "Time sequence must be only contain numerical entries"
         interpolated = []
-        for t in times:
-            if t <= self._times[0]: "The first and last items in times are the boundaries as time sequence is ordered"
+        for t in times:  
+            if t <= self._times[0]: ##The first and last items in times are the boundaries as time sequence is ordered
                 interpolated.append(self._values[0])
             elif t >= self._times[-1]:
                 interpolated.append(self._values[-1])

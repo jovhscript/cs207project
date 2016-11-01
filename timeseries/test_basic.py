@@ -1,6 +1,7 @@
 
 import unittest
 from series import TimeSeries
+from series import ArrayTimeSeries
 
 class MyTest(unittest.TestCase): 
 
@@ -32,12 +33,20 @@ class MyTest(unittest.TestCase):
 		with self.assertRaises(AssertionError):
 			TimeSeries(list('abcd'))
 
+	def test_tsValueTimeEqLen(self):
+		'''
+		Checks that the value sequence and time sequence have the same lengths
+		'''
+		with self.assertRaises(AssertionError):
+			TimeSeries([1, 2, 3], [1])
+
 	def test_valTimeEqLen(self):
 		'''
 		Checks that the value sequence and time sequence have the same lengths
 		'''
 		with self.assertRaises(AssertionError):
 			TimeSeries([1, 2, 3], [1])
+
 
 	def test_zeroLen(self):
 		'''
@@ -81,6 +90,25 @@ class MyTest(unittest.TestCase):
 		ts = TimeSeries([])
 		with self.assertRaises(IndexError):
 			ts[0] = 10
+
+	def test_interpolateInputNonNumeric(self):
+		'''
+		Verify that an an Error is raised if the times input to the ArrayTimeSeries interpolate method contains non numeric elements
+		'''
+		ts = ArrayTimeSeries([1, 2], [3, 4])
+		with self.assertRaises(AssertionError):
+			ts.interpolate(list('abcd'))
+
+	def test_arrayTimeSeriesValueTimeEqLen(self):
+		'''
+		Checks that the value sequence and time sequence have the same lengths for ArrayTimeSeries
+		'''
+		with self.assertRaises(AssertionError):
+			ArrayTimeSeries([1, 2, 3], [1])
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
