@@ -1,6 +1,7 @@
 
 import unittest
 from series import TimeSeries
+from series import ArrayTimeSeries
 
 class MyTest(unittest.TestCase): 
 
@@ -94,7 +95,7 @@ class MyTest(unittest.TestCase):
 		'''
 		Verify that an an Error is raised if the times input to the ArrayTimeSeries interpolate method contains non numeric elements
 		'''
-		ts = ArrayTimeSiers([1, 2], [3, 4])
+		ts = ArrayTimeSeries([1, 2], [3, 4])
 		with self.assertRaises(AssertionError):
 			ts.interpolate(list('abcd'))
 
