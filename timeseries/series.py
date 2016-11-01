@@ -117,11 +117,11 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
             return val_array
     
     def iteritems(self):
-        return self.produce()[1]
+        return self._gen
     
     def __iter__(self):
         return self
     
     def __next__(self):
-        return self.produce()
+        return self.produce()[1]
         
