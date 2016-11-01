@@ -84,31 +84,27 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         self.timeseries = np.array(list(zip(self._times, self._values)))
 
     def interpolate(self, times):
-
-
-		"""
-		This function returns the interpolated values for new time points entered based on the existing time-value pairs using a piecewise-linear function. 
-		
-		For every new time point input, it takes the nearest two existing time points, draws a line between them, and picks the value at the new time point. 
-		
-
-		Notes
-		-----
-		- It assumes stationary boundary conditions: so if a new time point is smaller than the first existing time point, it uses the first value; likewise for larger time points.
-
-		Params
-		------
-		times : times
-		The function interpolate values for these new time points
-		
-		Examples
-		--------
-		>>> t1 = ArrayTimeSeries([1, 2, 3], [3, 6, 9])
-		>>> t1.interpolate([1.5, 5])
-		[4.5, 9]
-
-		"""
-
+        """
+        This function returns the interpolated values for new time points entered based on the existing time-value pairs using a piecewise-linear function. 
+        For every new time point input, it takes the nearest two existing time points, draws a line between them, and picks the value at the new time point. 
+        
+        Notes
+        -----
+        - It assumes stationary boundary conditions: so if a new time point is smaller than the first existing time point, it uses the first value; likewise for larger time points.
+        
+        Params
+        ------
+        times : times
+        The function interpolate values for these new time points
+        
+        Examples
+        --------
+        >>> t1 = ArrayTimeSeries([1, 2, 3], [3, 6, 9])
+        >>> t1.interpolate([1.5, 5])
+        [4.5, 9]
+        
+        """
+        
         assert len(self._times) >= 1, "require at least one time-value pair for interpolation"
         assert isNumericList(times), "Time sequence must be only contain numerical entries"
         interpolated = []
