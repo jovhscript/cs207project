@@ -236,10 +236,12 @@ class ArrayTimeSeriesTest(unittest.TestCase):
 
 	def test_valTimeEqLen(self):
 		'''
-		Checks that when value sequence and time sequence do not have the same lengths, extra times are dropped
+		Checks that the value sequence and time sequence have the same lengths
 		'''
-		ts = ArrayTimeSeries([1, 2, 3], [1])
-		self.assertTrue(np.array_equal(ts.timeseries, np.array([[1, 1]])))
+		with self.assertRaises(AssertionError):
+			ArrayTimeSeries([1, 2, 3], [1])
+
+
 
 	def test_nonZeroLen(self):
 		'''
@@ -251,7 +253,7 @@ class ArrayTimeSeriesTest(unittest.TestCase):
 		'''
 		Test the getItem with an index smaller than the length
 		'''
-		ts = ArrayTimeSeries([1, 2, 3], [1])
+		ts = ArrayTimeSeries([1, 2, 3], [1, 3, 5])
 		self.assertEqual(ts[0], 1)
 
 	def test_getItemNotPresent(self):
@@ -387,6 +389,51 @@ class ArrayTimeSeriesTest(unittest.TestCase):
 		test_values = [1,2,3,4,5]
 		ts = ArrayTimeSeries(test_times, test_values)
 		self.assertEqual(-ts, [-1, -2, -3, -4, -5])
+
+	def test_interpolateNumeric(self):
+		'''
+		Checks that an Error is raised if the time sequence input for interpolation contains non numeric elements
+		'''
+		test_times = [1,2,3,4,5]
+		test_values = [1,2,3,4,5]
+		ts = ArrayTimeSeries(test_times, test_values)
+		with self.assertRaises(AssertionError):
+			ts.interpolate(list('abcd'))
+
+	def test_interpolateEmptyTS(self):
+		'''
+		Checks that an Error is raised if try to interpolate based on an empty ArrayTimeSeries
+		'''
+		ts = ArrayTimeSeries([], [])
+		with self.assertRaises(AssertionError):
+			ts.interpolate([1])
+
+	def test_interpolateEmptyInput(self):
+		'''
+		Checks that an Error is raised if try to interpolate based on an empty ArrayTimeSeries
+		'''
+		ts = ArrayTimeSeries([1], [2])
+		self.assertEqual(ts.interpolate([]), [])
+
+
+	def test_interpolateInBound(self):
+		'''
+		Test the interpolate function for a new time input within the boundary of the existing time sequence
+		'''
+		test_times = [1,2]
+		test_values = [3,6]
+		ts = ArrayTimeSeries(test_times, test_values)
+		self.assertEqual(ts.interpolate([1.5]), [4.5])
+
+	def test_interpolateBoundaryCondition(self):
+		'''
+		Verify if a new time point is smaller than the first time point in the existing time series, the interpolate function outputs the first value; likewise for larger time points.
+		'''
+		test_times = [1, 3]
+		test_values = [3, 9]
+		ts = ArrayTimeSeries(test_times, test_values)
+		self.assertEqual(ts.interpolate([3, 5]), [9, 9])
+
 
 
 class StreamingTimeSeriesTest(unittest.TestCase):
