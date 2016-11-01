@@ -191,7 +191,7 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         else:
             assert isNumericList(values), "Values sequence must be only contain numerical entries"
             self._values = np.array([v for v in values])
-            if times:
+            if times is not None:
                 assert isNumericList(times), "Time sequence must be only contain numerical entries"
                 assert all(times[i] <= times[i+1] for i in range(len(times)-1)), "Time sequence must be ordered"
                 self._times = np.array([t for t in times])
