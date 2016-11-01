@@ -2,24 +2,12 @@ import itertools
 import reprlib
 import numpy as np
 import abc
-from .lazy import *
+from lazy import *
 
 class TimeSeriesInterface(abc.ABC):
     """
     This is the interface for a Timeseries. 
     """
-
-    @abc.abstractmethod
-    def __getitem__(self, i):
-    	"""
-    	returns the ith item of the time series.
-    	"""
-
-    @abc.abstractmethod
-    def __contains__(self, value):
-    	"""
-    	returns True if the value is contained in the time series, False otherwise.
-    	"""
 
     @abc.abstractmethod
     def __iter__(self):
@@ -32,12 +20,6 @@ class TimeSeriesInterface(abc.ABC):
         """
         returns a string representation of the object
         """
-
-    @abc.abstractmethod
-    def itertimes(self):
-    	"""
-    	returns an iterator over the times of the timeseries
-    	"""
 
     def iteritems(self):
         """
@@ -224,13 +206,18 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
 class StreamTimeSeriesInterface(TimeSeriesInterface):
-   @abc.abstractmethod
+    @abc.abstractmethod
     def produce(self, chunk=1):
         """
         produces a set of 'chunk' ew elements into the timeseries whenever it is called
         """
+    @abc.abstractmethod
     def online_mean(self):
         """
         Returns a new Streaming Time Series with tuples (time/index, value, online_mean)
         """
+    @abc.abstractmethod
     def online_dev(self):
+        """
+        Returns a new Streaming Time Series with tuples (time/index, value, online_mean, online_dev)
+        """

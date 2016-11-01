@@ -141,7 +141,7 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
                     yield (n, value[1], mu)
         return SimulatedTimeSeries(inner())
 
-    def online_mean_dev(iterator):
+    def online_dev(iterator):
         def inner(iterator=self._gen):
             n = 0
             dev_accum = 0.0
@@ -157,4 +157,7 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
                     mu = value
             yield (n, value, mu, 0.0) 
         return SimulatedTimeSeries(inner())
+
+    def __repr__(self):
+        return str(type(self))
         
