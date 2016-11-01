@@ -2,6 +2,7 @@
 import unittest
 from series import TimeSeries, ArrayTimeSeries, SimulatedTimeSeries
 import numpy as np
+import math
 
 class TimeSeriesTest(unittest.TestCase): 
 	"""
@@ -85,6 +86,115 @@ class TimeSeriesTest(unittest.TestCase):
 		with self.assertRaises(IndexError):
 			ts[0] = 10
 
+	def test_contains(self):
+		'''
+		Verify __contains__
+		'''
+		test_times = [2.3, 3.4, 4.1, 9, 10]
+		test_values = [5, 8.9, 10.1, 19.8, 2]
+		ts = TimeSeries(test_values, test_times)
+		self.assertEqual((5 in ts), True)
+		self.assertEqual((5.1 in ts), False)
+
+	def test_addition(self):
+		'''
+		Verify adding two timeseries
+		'''
+		test_times = [1, 2, 3, 4, 5]
+		test_values = [1, 2, 3, 4, 5]
+		test_times1 = [1, 2, 3, 4, 6]
+		test_values1 = [5, 6, 7, 8, 9]
+		ts = TimeSeries(test_values, test_times)
+		ts0 = TimeSeries(test_values1, test_times)
+		ts1 = TimeSeries(test_values1, test_times1)
+		self.assertEqual((ts + ts0), TimeSeries([6, 8, 10, 12, 14], [1, 2, 3, 4, 5]))
+		with self.assertRaises(ValueError):
+			ts + ts1
+
+	def test_subtraction(self):
+		'''
+		Verify subtracting two timeseries
+		'''
+		test_times = [1, 2, 3, 4, 5]
+		test_values = [1, 2, 3, 4, 5]
+		test_times1 = [1, 2, 3, 4, 6]
+		test_values1 = [5, 6, 7, 8, 9]
+		ts = TimeSeries(test_values, test_times)
+		ts0 = TimeSeries(test_values1, test_times)
+		ts1 = TimeSeries(test_values1, test_times1)
+		self.assertEqual((ts0 - ts), TimeSeries([4, 4, 4, 4, 4], [1, 2, 3, 4, 5]))
+		with self.assertRaises(ValueError):
+			ts - ts1
+
+	def test_multiplication(self):
+		'''
+		Verify multiplying two timeseries
+		'''
+		test_times = [1, 2, 3, 4, 5]
+		test_values = [1, 2, 3, 4, 5]
+		test_times1 = [1, 2, 3, 4, 6]
+		test_values1 = [5, 6, 7, 8, 9]
+		ts = TimeSeries(test_values, test_times)
+		ts0 = TimeSeries(test_values1, test_times)
+		ts1 = TimeSeries(test_values1, test_times1)
+		self.assertEqual((ts * ts0), TimeSeries([5, 12, 21, 32, 45], [1, 2, 3, 4, 5]))
+		with self.assertRaises(ValueError):
+			ts * ts1
+
+	def test_equal(self):
+		'''
+		Verify equating two timeseries
+		'''
+		test_times = [2.3, 3.4, 4.1, 9, 10]
+		test_values = [5, 8.9, 10.1, 19.8, 2]
+		test_times1 = [2, 3.4, 4.1, 9, 10]
+		test_values1 = [5, 6, 7, 8, 9]
+		ts = TimeSeries(test_values, test_times)
+		ts0 = TimeSeries(test_values1, test_times)
+		ts1 = TimeSeries(test_values1, test_times1)
+		self.assertEqual((ts==ts), True)
+		self.assertEqual((ts==ts0), False)
+		with self.assertRaises(ValueError):
+			ts == ts1
+
+	def test_abs(self):
+		'''
+		Verify 2-norm of time series
+		'''
+		test_times = [1,2,3,4,5]
+		test_values = [1,2,3,4,5]
+		ts = TimeSeries(test_values, test_times)
+		self.assertEqual(abs(ts), 55)
+
+	def test_abs(self):
+		'''
+		Verify 2-norm of time series
+		'''
+		test_times = [1,2,3,4,5]
+		test_values = [1,2,3,4,5]
+		ts = TimeSeries(test_values, test_times)
+		self.assertEqual(abs(ts), math.sqrt(55))
+
+	def test_bool(self):
+		'''
+		Verify if bool of 2-norm
+		'''
+		test_values = [1,2,3,4,5]
+		test_values1 = [0,0,0,0,0]
+		ts = TimeSeries(test_values)
+		ts1 = TimeSeries(test_values1)
+		self.assertEqual(bool(ts), True)
+		self.assertEqual(bool(ts1), False)
+
+	def test_neg(self):
+		'''
+		Verify if negation
+		'''
+		test_values = [1,2,3,4,5]
+		ts = TimeSeries(test_values)
+		self.assertEqual(-ts, [-1, -2, -3, -4, -5])
+
+
 class ArrayTimeSeriesTest(unittest.TestCase): 
 	"""
 	These tests concern the ArrayTimeSeries
@@ -167,6 +277,115 @@ class ArrayTimeSeriesTest(unittest.TestCase):
 		ts = ArrayTimeSeries([], [])
 		with self.assertRaises(IndexError):
 			ts[0] = 10
+    #
+	# def test_contains(self):
+	# 	'''
+	# 	Verify __contains__
+	# 	'''
+	# 	test_times = [2.3, 3.4, 4.1, 9, 10]
+	# 	test_values = [5, 8.9, 10.1, 19.8, 2]
+	# 	ts = ArrayTimeSeries(test_values, test_times)
+	# 	self.assertEqual((5 in ts), True)
+	# 	self.assertEqual((5.1 in ts), False)
+    #
+	# def test_addition(self):
+	# 	'''
+	# 	Verify adding two timeseries
+	# 	'''
+	# 	test_times = [1, 2, 3, 4, 5]
+	# 	test_values = [1, 2, 3, 4, 5]
+	# 	test_times1 = [1, 2, 3, 4, 6]
+	# 	test_values1 = [5, 6, 7, 8, 9]
+	# 	ts = ArrayTimeSeries(test_values, test_times)
+	# 	ts0 = ArrayTimeSeries(test_values1, test_times)
+	# 	ts1 = ArrayTimeSeries(test_values1, test_times1)
+	# 	self.assertEqual((ts + ts0), ArrayTimeSeries([6, 8, 10, 12, 14], [1, 2, 3, 4, 5]))
+	# 	with self.assertRaises(ValueError):
+	# 		ts + ts1
+    #
+	# def test_subtraction(self):
+	# 	'''
+	# 	Verify subtracting two timeseries
+	# 	'''
+	# 	test_times = [1, 2, 3, 4, 5]
+	# 	test_values = [1, 2, 3, 4, 5]
+	# 	test_times1 = [1, 2, 3, 4, 6]
+	# 	test_values1 = [5, 6, 7, 8, 9]
+	# 	ts = ArrayTimeSeries(test_values, test_times)
+	# 	ts0 = ArrayTimeSeries(test_values1, test_times)
+	# 	ts1 = ArrayTimeSeries(test_values1, test_times1)
+	# 	self.assertEqual((ts0 - ts), ArrayTimeSeries([4, 4, 4, 4, 4], [1, 2, 3, 4, 5]))
+	# 	with self.assertRaises(ValueError):
+	# 		ts - ts1
+    #
+	# def test_multiplication(self):
+	# 	'''
+	# 	Verify multiplying two timeseries
+	# 	'''
+	# 	test_times = [1, 2, 3, 4, 5]
+	# 	test_values = [1, 2, 3, 4, 5]
+	# 	test_times1 = [1, 2, 3, 4, 6]
+	# 	test_values1 = [5, 6, 7, 8, 9]
+	# 	ts = ArrayTimeSeries(test_values, test_times)
+	# 	ts0 = ArrayTimeSeries(test_values1, test_times)
+	# 	ts1 = ArrayTimeSeries(test_values1, test_times1)
+	# 	self.assertEqual((ts * ts0), ArrayTimeSeries([5, 12, 21, 32, 45], [1, 2, 3, 4, 5]))
+	# 	with self.assertRaises(ValueError):
+	# 		ts * ts1
+    #
+	# def test_equal(self):
+	# 	'''
+	# 	Verify equating two timeseries
+	# 	'''
+	# 	test_times = [2.3, 3.4, 4.1, 9, 10]
+	# 	test_values = [5, 8.9, 10.1, 19.8, 2]
+	# 	test_times1 = [2, 3.4, 4.1, 9, 10]
+	# 	test_values1 = [5, 6, 7, 8, 9]
+	# 	ts = ArrayTimeSeries(test_values, test_times)
+	# 	ts0 = ArrayTimeSeries(test_values1, test_times)
+	# 	ts1 = ArrayTimeSeries(test_values1, test_times1)
+	# 	self.assertEqual((ts==ts), True)
+	# 	self.assertEqual((ts==ts0), False)
+	# 	with self.assertRaises(ValueError):
+	# 		ts == ts1
+    #
+	# def test_abs(self):
+	# 	'''
+	# 	Verify 2-norm of time series
+	# 	'''
+	# 	test_times = [1,2,3,4,5]
+	# 	test_values = [1,2,3,4,5]
+	# 	ts = ArrayTimeSeries(test_values, test_times)
+	# 	self.assertEqual(abs(ts), 55)
+    #
+	# def test_abs(self):
+	# 	'''
+	# 	Verify 2-norm of time series
+	# 	'''
+	# 	test_times = [1,2,3,4,5]
+	# 	test_values = [1,2,3,4,5]
+	# 	ts = ArrayTimeSeries(test_values, test_times)
+	# 	self.assertEqual(abs(ts), math.sqrt(55))
+    #
+	# def test_bool(self):
+	# 	'''
+	# 	Verify if bool of 2-norm
+	# 	'''
+	# 	test_values = [1,2,3,4,5]
+	# 	test_values1 = [0,0,0,0,0]
+	# 	ts = ArrayTimeSeries(test_values)
+	# 	ts1 = ArrayTimeSeries(test_values1)
+	# 	self.assertEqual(bool(ts), True)
+	# 	self.assertEqual(bool(ts1), False)
+    #
+	# def test_neg(self):
+	# 	'''
+	# 	Verify if negation
+	# 	'''
+	# 	test_values = [1,2,3,4,5]
+	# 	ts = ArrayTimeSeries(test_values)
+	# 	self.assertEqual(-ts, [-1, -2, -3, -4, -5])
+
 
 class StreamingTimeSeriesTest(unittest.TestCase):
 	"""
