@@ -229,3 +229,8 @@ class StreamTimeSeriesInterface(TimeSeriesInterface):
         """
         produces a set of 'chunk' ew elements into the timeseries whenever it is called
         """
+    def online_mean(self):
+        """
+        Returns a new Streaming Time Series with tuples (time/index, value, online_mean)
+        """
+    def online_dev(self):
