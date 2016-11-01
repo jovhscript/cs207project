@@ -99,3 +99,29 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
 				interpolated_val = self._values[prev_index] + (t - self._times[prev_index]) * lin_slope
 				interpolated.append(interpolated_val)
 		return interpolated
+
+class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
+    
+    def __init__(self, gen):
+        self._gen = gen
+    
+    def produce(self, chunk=1):
+        val_array = []
+        try:
+            for i in range(0, chunk):
+                next_value = next(self._gen)
+                val_array.append(next_value)
+        except:
+            pass
+        finally:
+            return val_array
+    
+    def iteritems(self):
+        return self.produce()[1]
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        return self.produce()
+        
