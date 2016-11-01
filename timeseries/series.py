@@ -3,7 +3,8 @@
 import itertools
 import reprlib
 import numpy as np
-import interfaces 
+import interfaces
+from math import sqrt 
 
 def isNumericList(seq):
     '''
@@ -126,10 +127,11 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
         return self.produce()
 
     def online_mean(self):
-        def inner(iterator=self._gen):
+        def inner_mean(iterator=self._gen):
             n = 0
             mu = 0
             for value in iterator:
+                print(value)
                 n += 1
                 if isinstance(value, tuple):
                     delta = value[1] - mu
@@ -138,25 +140,36 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
                 else:
                     delta = value - mu
                     mu = mu + delta/n
-                    yield (n, value[1], mu)
-        return SimulatedTimeSeries(inner())
+                    yield (n-1, value, mu)
+        return SimulatedTimeSeries(inner_mean())
 
-    def online_dev(iterator):
-        def inner(iterator=self._gen):
+    def online_dev(self):
+        def inner_dev(iterator=self._gen):
             n = 0
             dev_accum = 0.0
             for value in iterator:
                 n += 1
                 if n > 1:
-                    old_mu = mu
-                    mu = old_mu + (value - old_mu)/n
-                    dev_accum += (value - old_mu)*(value - mu) 
-                    stddev = sqrt(dev_accum/(n-1))
-                    yield (n, value, mu, stddev)
+                    if isinstance(value, tuple):
+                        old_mu = mu
+                        mu = old_mu + (value[1] - old_mu)/n
+                        dev_accum += (value[1] - old_mu)*(value[1] - mu) 
+                        stddev = sqrt(dev_accum/(n-1))
+                        yield (value[0], value[1], mu, stddev)
+                    else:
+                        old_mu = mu
+                        mu = old_mu + (value - old_mu)/n
+                        dev_accum += (value - old_mu)*(value - mu) 
+                        stddev = sqrt(dev_accum/(n-1))
+                        yield (n, value, mu, stddev)
                 else:
-                    mu = value
-            yield (n, value, mu, 0.0) 
-        return SimulatedTimeSeries(inner())
+                    if isinstance(value, tuple):
+                        mu = value[1]
+                        yield (value[0], value[1], mu, 0)
+                    else:
+                        mu = value
+                        yield (n, value, mu, 0)
+        return SimulatedTimeSeries(inner_dev())
 
     def __repr__(self):
         return str(type(self))
