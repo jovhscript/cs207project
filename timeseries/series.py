@@ -4,6 +4,7 @@ import itertools
 import reprlib
 import numpy as np
 import interfaces
+from interfaces import *
 from math import sqrt
 import types
 
@@ -73,6 +74,81 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
             else:
                 self._times = range(0,len(self._values))
             self.timeseries = list(zip(self._times, self._values))
+
+    @staticmethod
+    def _check_match_helper(self , rhs):
+        """
+        Helper function to check if two timeseries have matching times
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; otherwise a ValueError will be raised
+        """
+        if (len(self._times)==0) or (len(self._times)==0):
+            raise NotImplemented
+        if not self._times==rhs._times:
+            raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+
+    def __add__(self, rhs):
+        """
+        Element-wise addition of two timeseries instances
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
+        if isinstance(rhs, TimeSeries):
+            TimeSeries._check_match_helper(self, rhs)
+            pairs = zip(self._values, rhs._values)
+            return TimeSeries([a + b for a, b in pairs], self._times)
+        else:
+            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+    def __sub__(self, rhs):
+        """
+        Element-wise subtraction of two timeseries instances
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
+        if isinstance(rhs, TimeSeries):
+            TimeSeries._check_match_helper(self, rhs)
+            pairs = zip(self._values, rhs._values)
+            return TimeSeries([a - b for a, b in pairs], self._times)
+        else:
+            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+    def __mul__(self, rhs):
+        """
+        Element-wise multiplication of two timeseries instances
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
+        if isinstance(rhs, TimeSeries):
+            TimeSeries._check_match_helper(self, rhs)
+            pairs = zip(self._values, rhs._values)
+            return TimeSeries([a * b for a, b in pairs], self._times)
+        else:
+            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+    def __eq__(self, rhs):
+        """
+        Check if two timeseries instances are the same
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
+        if isinstance(rhs, TimeSeries):
+            TimeSeries._check_match_helper(self, rhs)
+            pairs = zip(self._values, rhs._values)
+            return all([a==b for a, b in pairs])
+        else:
+            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
 
 class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
     """This ArrayTimeSeries class stores a single, ordered set of numerical data as numpy arrays. It inherites from the SizedContainerTimeSeriesInterface
@@ -160,6 +236,75 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
                 interpolated_val = self._values[prev_index] + (t - self._times[prev_index]) * lin_slope
                 interpolated.append(interpolated_val)
         return interpolated
+
+    @staticmethod
+    def _check_match_helper(self , rhs):
+        """
+        Helper function to check if two timeseries have matching times
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; otherwise a ValueError will be raised
+        """
+        if (len(self._times)==0) or (len(self._times)==0):
+            raise NotImplemented
+        if not all(self._times==rhs._times):
+            raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+    def __add__(self, rhs):
+        """
+        Element-wise addition of two timeseries instances
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
+        if isinstance(rhs, ArrayTimeSeries):
+            ArrayTimeSeries._check_match_helper(self, rhs)
+            return ArrayTimeSeries(self._values + rhs._values, self._times)
+        else:
+            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+    def __sub__(self, rhs):
+        """
+        Element-wise subtraction of two timeseries instances
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
+        if isinstance(rhs, ArrayTimeSeries):
+            ArrayTimeSeries._check_match_helper(self, rhs)
+            return ArrayTimeSeries(self._values - rhs._values, self._times)
+        else:
+            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+    def __mul__(self, rhs):
+        """
+        Element-wise multiplication of two timeseries instances
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
+        if isinstance(rhs, ArrayTimeSeries):
+            ArrayTimeSeries._check_match_helper(self, rhs)
+            return ArrayTimeSeries(self._values * rhs._values, self._times)
+        else:
+            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+
+    def __eq__(self, rhs):
+        """
+        Check if two timeseries instances are the same
+
+        Parameter
+        ----------------
+        rhs: a TimeSeries instance with the exact same time indeces; if rhs is not a TimeSeries, a TypeError will be raised; if the rhs does not have matching time indeces, a ValueError will be raised
+        """
+        if isinstance(rhs, ArrayTimeSeries):
+            ArrayTimeSeries._check_match_helper(self, rhs)
+            return (self._values == rhs._values)
+        else:
+            raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
 class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
     """ This SimulatedTimeSeries class can produce items from a time series generated by a python generator. It inherites from the StreamTimeSeriesInterface
