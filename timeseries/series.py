@@ -228,7 +228,7 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         assert len(self._times) >= 1, "require at least one time-value pair for interpolation"
         if len(times) == 0:
             return []
-            
+
         assert isNumericList(times), "Time sequence must only contain numerical entries"
         interpolated = []
         for t in times:  
@@ -268,6 +268,8 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
             return ArrayTimeSeries(self._values + rhs._values, self._times)
+        elif isinstance(rhs, (int, long, float)):
+            return ArrayTimeSeries([x + rhs for x in self._values], self._times)
         else:
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
@@ -282,6 +284,8 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
             return ArrayTimeSeries(self._values - rhs._values, self._times)
+        elif isinstance(rhs, (int, long, float)):
+            return ArrayTimeSeries([x - rhs for x in self._values], self._times)
         else:
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
@@ -296,6 +300,8 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
             return ArrayTimeSeries(self._values * rhs._values, self._times)
+        elif isinstance(rhs, (int, long, float)):
+            return ArrayTimeSeries([x*rhs for x in self._values], self._times)
         else:
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
