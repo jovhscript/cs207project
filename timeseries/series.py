@@ -228,7 +228,7 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         assert len(self._times) >= 1, "require at least one time-value pair for interpolation"
         if len(times) == 0:
             return []
-:wq
+            
         assert isNumericList(times), "Time sequence must only contain numerical entries"
         interpolated = []
         for t in times:  
@@ -425,9 +425,6 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
                         stddev = sqrt(dev_accum/(n-1))
                         yield (n-1, value, mu, stddev)
                 else:
-                    mu = value
-            yield (n, value, mu, 0.0) 
-        return SimulatedTimeSeries(inner())
                     if isinstance(value, tuple):
                         mu = value[1]
                         yield (value[0], value[1], mu, 0)
