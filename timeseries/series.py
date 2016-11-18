@@ -101,8 +101,10 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
             TimeSeries._check_match_helper(self, rhs)
             pairs = zip(self._values, rhs._values)
             return TimeSeries([a + b for a, b in pairs], self._times)
+        elif isinstance(rhs, (int, long, float)):
+            return TimeSeries([x + rhs for x in self._values], self._times)
         else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
 
     def __sub__(self, rhs):
         """
@@ -116,8 +118,10 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
             TimeSeries._check_match_helper(self, rhs)
             pairs = zip(self._values, rhs._values)
             return TimeSeries([a - b for a, b in pairs], self._times)
+        elif isinstance(rhs, (int, long, float)):
+            return TimeSeries([x - rhs for x in self._values], self._times)
         else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
 
     def __mul__(self, rhs):
         """
@@ -131,8 +135,10 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
             TimeSeries._check_match_helper(self, rhs)
             pairs = zip(self._values, rhs._values)
             return TimeSeries([a * b for a, b in pairs], self._times)
+        elif isinstance(rhs, (int, long, float)):
+            return TimeSeries([x * rhs for x in self._values], self._times)
         else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
 
     def __eq__(self, rhs):
         """
@@ -256,7 +262,7 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         if (len(self._times)==0) or (len(self._times)==0):
             raise NotImplemented
         if not all(self._times==rhs._times):
-            raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+            raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points or a number')
     def __add__(self, rhs):
         """
         Element-wise addition of two timeseries instances
@@ -271,7 +277,7 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         elif isinstance(rhs, (int, long, float)):
             return ArrayTimeSeries([x + rhs for x in self._values], self._times)
         else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
 
     def __sub__(self, rhs):
         """
@@ -287,7 +293,7 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         elif isinstance(rhs, (int, long, float)):
             return ArrayTimeSeries([x - rhs for x in self._values], self._times)
         else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
 
     def __mul__(self, rhs):
         """
