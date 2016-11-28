@@ -1,10 +1,4 @@
-#!/usr/bin/python3.5
-
-import itertools
-import reprlib
-import numpy as np
 from interfaces import *
-from math import sqrt
 from FileStorageManager import CreateDB
 import types
 
@@ -20,15 +14,15 @@ def isNumericList(seq):
             return False
 
 class SMTimeSeries(SizedContainerTimeSeriesInterface):
-    def __init__(self, values, times=None, key=None):
-        self.db= CreateDB("SM_DB.dbdb")
+    def __init__(self, values, times=None, id=None):
+        self.db= CreateDB("SMTimeSeries.dbdb")
         self.ts = TimeSeries(values, times)
-        self.key = self.db.store_ts(key = key, ts = self.ts)
+        self.id = self.db.store_ts(id = id, ts = self.ts)
 
-    def from_db(self, key, dbname="SMTimeSeries"):
-        self.key = str(key)
+    def from_db(self, id, dbname="SMTimeSeries"):
+        self.id = str(id)
         self.db = CreateDB(dbname)
-        return self.db.get_ts(self.key)
+        return self.db.get_ts(self.id)
 
     def __add__(self, rhs):
         return self.ts + rhs
@@ -108,7 +102,7 @@ class TimeSeries(SizedContainerTimeSeriesInterface):
         ----------------
         rhs: a TimeSeries instance with the exact same time indeces; otherwise a ValueError will be raised
         """
-        if (len(self._times)==0) or (len(self._times)==0):
+        if (len(self._times)==0) or (len(rhs._times)==0):
             raise NotImplemented
         if not self._times==rhs._times:
             raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
@@ -433,13 +427,13 @@ class SimulatedTimeSeries(StreamTimeSeriesInterface):
                         old_mu = mu
                         mu = old_mu + (value[1] - old_mu)/n
                         dev_accum += (value[1] - old_mu)*(value[1] - mu) 
-                        stddev = sqrt(dev_accum/(n-1))
+                        stddev = math.sqrt(dev_accum/(n-1))
                         yield (value[0], value[1], mu, stddev)
                     else:
                         old_mu = mu
                         mu = old_mu + (value - old_mu)/n
                         dev_accum += (value - old_mu)*(value - mu) 
-                        stddev = sqrt(dev_accum/(n-1))
+                        stddev = math.sqrt(dev_accum/(n-1))
                         yield (n-1, value, mu, stddev)
                 else:
                     if isinstance(value, tuple):
