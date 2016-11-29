@@ -123,7 +123,6 @@ class SizedContainerTimeSeriesInterface(TimeSeriesInterface):
 
         - If the TimeSeries contains more than 5 elements, we only print the first 5 elements.
         '''
-
         length = len(self.timeseries)
         if length <= 5:
             return str(self.timeseries)
