@@ -147,6 +147,7 @@ class BinaryTree(object):
         self._tree_ref = self._insert(node, key, value_ref)
         
     def in_order_traversal(self):
+        """Code to produce in-order traversal of the tree"""
         #if tree is not locked by another writer
         #refresh the references and get new tree if needed
         if not self._storage.locked:
@@ -166,6 +167,7 @@ class BinaryTree(object):
         return solution    
        
     def get_nodes_less_than(self, key):
+        """Find all nodes that have a key value <= 'key'"""
         #if tree is not locked by another writer
         #refresh the references and get new tree if needed
         if not self._storage.locked:
@@ -188,6 +190,8 @@ class BinaryTree(object):
         return solution
     
     def get_nodes_greater_than(self, key):
+        """Find all nodes that have a key value >= 'key'"""
+        
         #if tree is not locked by another writer
         #refresh the references and get new tree if needed
         if not self._storage.locked:

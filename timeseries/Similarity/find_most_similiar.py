@@ -15,7 +15,7 @@ from pick_vantage_points import pick_vantage_points
 def sanity_check(filename,n):
     """
     Function that manually finds the n most similiar timeseries to the given
-    timeseries. Serves as a check of the radius/vantage point method
+    timeseries. Serves as a check of the vantage point method
     
     Returns: list of n most similiar filenames 
     """
@@ -111,9 +111,9 @@ def find_most_similiar(filename,n, vantage_pts):
         
     return file_names
 
-   
-
-if __name__ == "__main__":
+def similarity_program():
+    """This is a command line program that finds similiar timeseries"""
+    
     print("TimeSeries Similiarity Search")
     vp = []
     with open('vp') as f:
@@ -122,11 +122,13 @@ if __name__ == "__main__":
     
     keep_searching = True
     while keep_searching:
-    
+        
+        #Ensure that the file given is valid
         input_var = "GeneratedTimeseries/"+input("Enter timeseries filename: ")
         while not os.path.isfile(input_var):
             input_var = input("Enter valid timeseries filename: ")
-            
+           
+        #Ensure that the number of similiar filenames supplied is between 1 and 20
         flag = False
         while flag == False:
             num = input("Enter number of filenames to find: ")
@@ -135,20 +137,26 @@ if __name__ == "__main__":
                 if  num <= 20 and num >= 1:
                     flag = True
                 else:
-                    print("Invalid number, need integer between 0 and 20")
+                    print("Invalid number, need integer between 1 and 20")
             except ValueError:
-                print("Invalid number, need integer between 0 and 20")
+                print("Invalid number, need integer between 1 and 20")
                 
         
         print(find_most_similiar(input_var,num, vp))
     
     
+        #User inputs whether to search again or end the program
         input_var = input("Search Again? (Yes/No): ")
         while input_var != 'Yes' and input_var != 'No':
             input_var = input("Search Again? (Enter Yes or No): ")
             
         if input_var == 'No':
-            keep_searching = False
+            keep_searching = False    
+
+
+
+if __name__ == "__main__":
+    similarity_program()
         
 
             

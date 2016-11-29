@@ -31,8 +31,6 @@ def stand(x, m, s):
 
 def ccor(ts1, ts2):
     "given two standardized time series, compute their cross-correlation using FFT"
-    #return np.real(nfft.ifft(nfft.fft(ts1)*np.conj(nfft.fft(ts2))))/len(ts1)
-    #print(nfft.fftshift(np.real(nfft.ifft(nfft.fft(ts1)*np.conj(nfft.fft(ts2)))))/len(ts1))
     return nfft.fftshift(np.real(nfft.ifft(nfft.fft(ts1)*np.conj(nfft.fft(ts2)))))/len(ts1)
 
 # this is just for checking the max correlation with the
@@ -55,14 +53,12 @@ def kernel_corr(ts1, ts2, mult=1):
     return  (num/denom1)/denom2
 
 def distance(ts1,ts2,mult=1):
+    """Calculates the distance metric using the kernal coefficient"""
     return 2*(1-kernel_corr(ts1, ts2, mult))
 
 
 ##this is for a quick and dirty test of these functions
 if __name__ == "__main__":
-    
-    
-    
  
     t0 = ts(times=[0,1,2,4,5,6],values=[3,4,20,6,7,8])
     t0_stand = stand(t0,t0.mean(),t0.std())
@@ -70,7 +66,6 @@ if __name__ == "__main__":
     t1_stand = stand(t1,t1.mean(), t1.std())
     
     print(distance(t0_stand, t1_stand))
-    
     
     t1 = tsmaker(0.5, 0.1, 0.01)
     t2 = tsmaker(0.5, 0.1, 0.01)
@@ -100,4 +95,3 @@ if __name__ == "__main__":
     sumcorr = kernel_corr(standts3, standts4, mult=10)
     print(sumcorr)
     
-    #ts1 with ts1 look at the maximum and try to get 1 
