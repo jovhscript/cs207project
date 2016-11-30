@@ -273,9 +273,9 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
-            return ArrayTimeSeries(self._values + rhs._values, self._times)
+            return ArrayTimeSeries(values=self._values + rhs._values, times=self._times)
         elif isinstance(rhs, (int, float)):
-            return ArrayTimeSeries([x + rhs for x in self._values], self._times)
+            return ArrayTimeSeries(values=[x + rhs for x in self._values], times=self._times)
         else:
             raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
 
@@ -289,9 +289,9 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
-            return ArrayTimeSeries(self._values - rhs._values, self._times)
+            return ArrayTimeSeries(values=self._values - rhs._values, times=self._times)
         elif isinstance(rhs, (int, float)):
-            return ArrayTimeSeries([x - rhs for x in self._values], self._times)
+            return ArrayTimeSeries(values=[x - rhs for x in self._values], times=self._times)
         else:
             raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
 
@@ -305,9 +305,9 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
-            return ArrayTimeSeries(self._values * rhs._values, self._times)
+            return ArrayTimeSeries(values=self._values * rhs._values, times=self._times)
         elif isinstance(rhs, (int, float)):
-            return ArrayTimeSeries([x*rhs for x in self._values], self._times)
+            return ArrayTimeSeries(values=[x*rhs for x in self._values], times=self._times)
         else:
             raise TypeError(str(rhs)+' must be a TimeSeries instance')
 
