@@ -28,10 +28,10 @@ Order in which to call files:
      'n' is 20 by default if not supplied by the user
      
    3. find_most_similar.py takes in arguments:
-     timeseries: mandatory name of timeseries to find similiar results to, Must be valid filename or returns error message
-     --n : optional integer of similiar timeseries to find, default is 1. Must be > 0 and < number of vantage points or returns error message
-     --save : optional boolean of whether to save the timeseries results in pickle format, default is False
-     --savefolder : optional string of what folder to save the results in (if save == TRUE), default is 'SimilaritySearchResults'
+         timeseries: mandatory name of timeseries to find similiar results to, Must be valid filename or returns error message
+         --n : optional integer of similiar timeseries to find, default is 1. Must be > 0 and < number of vantage points or returns error message
+         --save : optional boolean of whether to save the timeseries results in pickle format, default is False
+         --savefolder : optional string of what folder to save the results in (if save == TRUE), default is 'SimilaritySearchResults'
      
      Example: >> find_most_similar.py Timeseries1 --n 20 --save TRUE --savefolder 'AnswerTS'
 
