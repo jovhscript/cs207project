@@ -6,7 +6,6 @@ import abc
 
 from lazy import *
 
-
 class StorageManagerInterface(abc.ABC):
     """
     Storage Manager interface for part 8
@@ -33,7 +32,6 @@ class StorageManagerInterface(abc.ABC):
         """
         Returns a SizedContainerTimeSeriesInterface instance looked up by an id
         """
-
 
 
 class TimeSeriesInterface(abc.ABC):
