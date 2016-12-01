@@ -434,8 +434,6 @@ class ArrayTimeSeriesTest(unittest.TestCase):
 		ts = ArrayTimeSeries(test_times, test_values)
 		self.assertEqual(ts.interpolate([3, 5]), [9, 9])
 
-
-
 class StreamingTimeSeriesTest(unittest.TestCase):
     """
     These tests concern the SimulatedTimeSeries class.
