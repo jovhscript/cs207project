@@ -299,7 +299,7 @@ class ArrayTimeSeriesTest(unittest.TestCase):
         ts = ArrayTimeSeries(test_times, test_values)
         ts0 = ArrayTimeSeries(test_times, test_values1)
         ts1 = ArrayTimeSeries(test_times1, test_values1)
-        assert(all((ts + ts0) == ArrayTimeSeries([6, 8, 10, 12, 14], [1, 2, 3, 4, 5])))
+        assert(np.all((ts + ts0) == ArrayTimeSeries([1, 2, 3, 4, 5], [6, 8, 10, 12, 14])))
         with self.assertRaises(ValueError):
             ts + ts1
 
@@ -314,7 +314,7 @@ class ArrayTimeSeriesTest(unittest.TestCase):
         ts = ArrayTimeSeries(test_times, test_values)
         ts0 = ArrayTimeSeries(test_times, test_values1)
         ts1 = ArrayTimeSeries(test_times1, test_values1)
-        assert(all((ts - ts0) == ArrayTimeSeries([-4, -4, -4, -4, -4], [1, 2, 3, 4, 5])))
+        assert(np.all((ts - ts0) == ArrayTimeSeries([1, 2, 3, 4, 5], [-4, -4, -4, -4, -4])))
         with self.assertRaises(ValueError):
             ts - ts1
 
@@ -329,7 +329,7 @@ class ArrayTimeSeriesTest(unittest.TestCase):
         ts = ArrayTimeSeries(test_times, test_values)
         ts0 = ArrayTimeSeries(test_times, test_values1)
         ts1 = ArrayTimeSeries(test_times1, test_values1)
-        assert(all((ts * ts0) == ArrayTimeSeries([5, 12, 21, 32, 45], [1, 2, 3, 4, 5])))
+        assert(np.all((ts * ts0) == ArrayTimeSeries([1, 2, 3, 4, 5], [5, 12, 21, 32, 45])))
         with self.assertRaises(ValueError):
             ts * ts1
 
@@ -344,8 +344,8 @@ class ArrayTimeSeriesTest(unittest.TestCase):
         ts = ArrayTimeSeries(test_times, test_values)
         ts0 = ArrayTimeSeries(test_times, test_values1)
         ts1 = ArrayTimeSeries(test_times1, test_values1)
-        self.assertEqual(all(ts==ts), True)
-        self.assertEqual(all(ts==ts0), False)
+        self.assertEqual(np.all(ts==ts), True)
+        self.assertEqual(np.all(ts==ts0), False)
         with self.assertRaises(ValueError):
             ts == ts1
 
