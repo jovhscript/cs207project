@@ -274,11 +274,7 @@ class TimeSeries(SizedContainerTimeSeriesInterface):
         elif isinstance(rhs, (int, float)):
             return TimeSeries([x + rhs for x in self._values], self._times)
         else:
-<<<<<<< HEAD
-            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
-=======
             raise TypeError('rhs must be a TimeSeries instance')
->>>>>>> jack_branch
 
     def __sub__(self, rhs):
         """
@@ -295,11 +291,7 @@ class TimeSeries(SizedContainerTimeSeriesInterface):
         elif isinstance(rhs, (int, float)):
             return TimeSeries([x - rhs for x in self._values], self._times)
         else:
-<<<<<<< HEAD
-            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
-=======
             raise TypeError('rhs must be a TimeSeries instance')
->>>>>>> jack_branch
 
     def __mul__(self, rhs):
         """
@@ -316,11 +308,7 @@ class TimeSeries(SizedContainerTimeSeriesInterface):
         elif isinstance(rhs, (int, float)):
             return TimeSeries([x * rhs for x in self._values], self._times)
         else:
-<<<<<<< HEAD
-            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
-=======
             raise TypeError('rhs must be a TimeSeries instance')
->>>>>>> jack_branch
 
     def __eq__(self, rhs):
         """
@@ -443,14 +431,9 @@ class ArrayTimeSeries(SizedContainerTimeSeriesInterface):
         """
         if (len(self._times)==0) or (len(self._times)==0):
             raise NotImplemented
-<<<<<<< HEAD
-        if not all(self._times==rhs._times):
-            raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points or a number')
-=======
         if not np.all(self._times==rhs._times):
             raise ValueError('self and rhs must have the same time points')
 
->>>>>>> jack_branch
     def __add__(self, rhs):
         """
         Element-wise addition of two timeseries instances
@@ -461,19 +444,11 @@ class ArrayTimeSeries(SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
-<<<<<<< HEAD
-            return ArrayTimeSeries(self._values + rhs._values, self._times)
-        elif isinstance(rhs, (int, float)):
-            return ArrayTimeSeries([x + rhs for x in self._values], self._times)
-        else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
-=======
             return ArrayTimeSeries(self._times, self._values + rhs._values)
         elif isinstance(rhs, (int, float)):
             return ArrayTimeSeries(self._times, [x + rhs for x in self._values])
         else:
             raise TypeError('rhs must be a ArrayTimeSeries instance')
->>>>>>> jack_branch
 
     def __sub__(self, rhs):
         """
@@ -485,20 +460,11 @@ class ArrayTimeSeries(SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
-<<<<<<< HEAD
-            return ArrayTimeSeries(self._values - rhs._values, self._times)
-        elif isinstance(rhs, (int, float)):
-            return ArrayTimeSeries([x - rhs for x in self._values], self._times)
-        else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
-=======
             return ArrayTimeSeries(self._times, self._values - rhs._values)
         elif isinstance(rhs, (int, float)):
             return ArrayTimeSeries(self._times, [x - rhs for x in self._values])
         else:
             raise TypeError('rhs must be a ArrayTimeSeries instance')
-
->>>>>>> jack_branch
 
     def __mul__(self, rhs):
         """
@@ -510,15 +476,9 @@ class ArrayTimeSeries(SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
-<<<<<<< HEAD
-            return ArrayTimeSeries(self._values * rhs._values, self._times)
-        elif isinstance(rhs, (int, float)):
-            return ArrayTimeSeries([x*rhs for x in self._values], self._times)
-=======
             return ArrayTimeSeries(self._times, self._values * rhs._values)
         elif isinstance(rhs, (int, float)):
-            return ArrayTimeSeries(self._times, [x*rhs for x in self._values])
->>>>>>> jack_branch
+            return ArrayTimeSeries(self._times, [x * rhs for x in self._values])
         else:
             raise TypeError('rhs must be a ArrayTimeSeries instance')
 
