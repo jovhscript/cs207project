@@ -21,13 +21,13 @@ File Description:
 
     
 Order in which to call files:
-1. generate_time_series.py: takes no arguments
+   1. generate_time_series.py: takes no arguments
 
-2. pick_vantage_points.py: takes an argument for number of vantage points to produce, i.e. to create 20 vantage points:
+   2. pick_vantage_points.py: takes an argument for number of vantage points to produce, i.e. to create 20 vantage points:
      Example: >> pick_vantage_points.py --n 20
      'n' is 20 by default if not supplied by the user
      
-3. find_most_similar.py takes in arguments:
+   3. find_most_similar.py takes in arguments:
      timeseries: mandatory name of timeseries to find similiar results to, Must be valid filename or returns error message
      --n : optional integer of similiar timeseries to find, default is 1. Must be > 0 and < number of vantage points or returns error message
      --save : optional boolean of whether to save the timeseries results in pickle format, default is False
