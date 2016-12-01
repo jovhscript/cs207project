@@ -1,0 +1,7 @@
+pytest>=3.0
+pytest-cache
+pytest-cov
+pytest-flakes
+pytest-pep8
+Sphinx
+Pygments
