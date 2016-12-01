@@ -1,11 +1,5 @@
-#!/usr/bin/python3.5
-
-import itertools
-import reprlib
-import numpy as np
-import interfaces
 from interfaces import *
-from math import sqrt
+from FileStorageManager import CreateDB
 import types
 
 def isNumericList(seq):
@@ -19,7 +13,183 @@ def isNumericList(seq):
         except:
             return False
 
-class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
+def convert_ArrayTimeSeries_to_TimeSeries(ts):
+    """
+    This function converts an ArrayTimeSeries to a TimeSeries instance
+    """
+    if isinstance(ts, ArrayTimeSeries):
+        return TimeSeries(ts._values, ts._times)
+    else:
+        raise TypeError("input is not an ArrayTimeSeries")
+
+def convert_TimeSeries_to_ArrayTimeSeries(ts):
+    """
+    This function converts a TimeSeries to an ArrayTimeSeries instance
+    """
+    if isinstance(ts, TimeSeries):
+        return ArrayTimeSeries(ts._times, ts._values)
+    else:
+        raise TypeError("input is not an TimeSeries")
+
+
+class SMTimeSeries(SizedContainerTimeSeriesInterface):
+    """
+    This SMTimeSeries class stores a TimeSeries instance either by taking in the same parameters of TimeSeries, or
+    by taking in a key and the database in which the key is associated with a TimeSeries.
+    If a TimeSeries is passed into this class, then this TimeSeries instance is stored into the database where it can
+    be later looked up by its key.
+
+    Note:
+    One caveat is that the attributes and methods called in TimeSeries should all be able to work with SMTimeSeries.ts,
+    not SMTimeSeries itself.
+    """
+
+    def __init__(self, values=None, times=None, id=None, dbname="SMTimeSeries.dbdb"):
+        """
+        The constructor of the class takes for argumnent an ordered set of numerical data.
+
+        Parameters
+        ----------
+        values: Numerical Sequence, compulsory
+        times: Ordered Numerical Sequence, optional
+        id: The ID which the TimeSeries will be stored to in the database
+        dbname: Database name ending in ".dbdb"
+
+        Notes
+        -----
+        - If no values are passed, then the instance rely on "from_db" method for valuation
+        """
+        if values:
+            self.db= CreateDB(dbname)
+            self.ts = TimeSeries(values, times)
+            self.id = self.db.store_ts(id=id, ts=self.ts)
+
+    def from_db(self, id, dbname="SMTimeSeries.dbdb"):
+        """
+        The constructor of the class takes for argumnent id and database to extract a TimeSeries.
+
+        Parameters
+        ----------
+        id: numeric or string key to extract timeseries. Note that this id is converted into a standardized string,
+            for example: 1, 1.0, "1" and "1.0" will yield in the same id "1"
+        times: Ordered Numerical Sequence, optional
+        dbname: Database name ending in ".dbdb"
+
+        Returns
+        ----------
+        A TimeSeries instance corresponding to the key in the specified database.
+        -----
+        """
+        self.id = str(id)
+        self.db = CreateDB(dbname)
+        self.ts = self.db.get_ts(self.id)
+        return self.db.get_ts(self.id)
+
+    ### Adding computation methods for SMTimeSeries that are left to be defined
+    def __add__(self, rhs):
+        """
+        Implementation of adding between a SMTimeSeries and another SMTimeSeries or SizedContainerTimeSeriesInterface
+
+        Parameters:
+        -----------
+        rhs: a SMTimeSeries or SizedContainerTimeSeriesInterface
+
+        Note:
+        -----------
+        1. The SMTimeSeries is a "more general" type; so that:
+            SMT + SMT = SMT
+            SMT + TS = SMT
+            SMT + ATS = SMT
+            TS + TS = TS
+            TS + ATS = error
+        2. The result is also stored in the same database, with a generated key which can be retrieved as sum.id
+        """
+        if isinstance(rhs, SMTimeSeries):
+            out = self.ts + rhs.ts
+        elif isinstance(rhs, TimeSeries):
+            out = self.ts + rhs
+        elif isinstance(rhs, ArrayTimeSeries):
+            out = convert_ArrayTimeSeries_to_TimeSeries(convert_TimeSeries_to_ArrayTimeSeries(self.ts) + rhs)
+        else:
+            raise TypeError("rhs has to be a SMTimeseries or SizedContainerTimeSeriesInterface")
+        return SMTimeSeries(out._values, out._times)
+
+    def __sub__(self, rhs):
+        """
+        Implementation of subtracting between a SMTimeSeries and another SMTimeSeries or SizedContainerTimeSeriesInterface
+
+        Parameters:
+        -----------
+        rhs: a SMTimeSeries or SizedContainerTimeSeriesInterface
+
+        Note:
+        -----------
+        1. The SMTimeSeries is a "more general" type; so that:
+            SMT - SMT = SMT
+            SMT - TS = SMT
+            SMT - ATS = SMT
+            TS - TS = TS
+            TS - ATS = error
+        2.  The result is also stored in the same database, with a generated key which can be retrieved as sum.id
+        3.  ArrayTimeSeries - SMT and TimeSeries - SMT are not yet implemented. Changes needed in ArrayTimeSeries and TimeSeries definitions
+        """
+        if isinstance(rhs, SMTimeSeries):
+            out = self.ts - rhs.ts
+        elif isinstance(rhs, TimeSeries):
+            out = self.ts - rhs
+        elif isinstance(rhs, ArrayTimeSeries):
+            out = convert_ArrayTimeSeries_to_TimeSeries(convert_TimeSeries_to_ArrayTimeSeries(self.ts) - rhs)
+        else:
+            raise TypeError("rhs has to be a SMTimeseries or SizedContainerTimeSeriesInterface")
+        return SMTimeSeries(out._values, out._times)
+
+    def __mul__(self, rhs):
+        """
+        Implementation of multiplying between a SMTimeSeries and another SMTimeSeries or SizedContainerTimeSeriesInterface
+
+        Parameters:
+        -----------
+        rhs: a SMTimeSeries or SizedContainerTimeSeriesInterface
+
+        Note:
+        -----------
+        1. The SMTimeSeries is a "more general" type; so that:
+            SMT * SMT = SMT
+            SMT * TS = SMT
+            SMT * ATS = SMT
+            TS * TS = TS
+            TS * ATS = error
+        2.  The result is also stored in the same database, with a generated key which can be retrieved as sum.id
+        """
+        if isinstance(rhs, SMTimeSeries):
+            out = self.ts * rhs.ts
+        elif isinstance(rhs, TimeSeries):
+            out = self.ts * rhs
+        elif isinstance(rhs, ArrayTimeSeries):
+            out = convert_ArrayTimeSeries_to_TimeSeries(convert_TimeSeries_to_ArrayTimeSeries(self.ts) * rhs)
+        else:
+            raise TypeError("rhs has to be a SMTimeseries or SizedContainerTimeSeriesInterface")
+        return SMTimeSeries(out._values, out._times)
+
+    def __eq__(self, rhs):
+        """
+        Implementation of equaling between a SMTimeSeries and another SMTimeSeries or SizedContainerTimeSeriesInterface
+
+        Parameters:
+        -----------
+        rhs: a SMTimeSeries or SizedContainerTimeSeriesInterface
+
+        Note:
+        -----------
+        1. The comparison will be made between the TimeSeries stored inside the SMTimeSeries, and the id does not matter
+        """
+        if isinstance(rhs, SMTimeSeries):
+            return self.ts == rhs.ts
+        if isinstance(rhs, SizedContainerTimeSeriesInterface):
+            return self.ts == rhs
+
+
+class TimeSeries(SizedContainerTimeSeriesInterface):
     """This TimeSeries class stores a single, ordered set of numerical data as a Python list. It inherites from the SizedContainerTimeSeriesInterface
     and hence from the TimeSeriesInterface."""
     def __init__(self, values, times=None):
@@ -66,7 +236,7 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         else:
             assert isNumericList(values), "Values sequence must be only contain numerical entries"
             self._values = [v for v in values]
-            if times:
+            if times is not None:
                 assert isNumericList(times), "Time sequence must be only contain numerical entries"
                 assert all(times[i] <= times[i+1] for i in range(len(times)-1)), "Time sequence must be ordered"
                 assert len(times) == len(values), "Time and Value sequences must have the same lengths"
@@ -84,10 +254,10 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         ----------------
         rhs: a TimeSeries instance with the exact same time indeces; otherwise a ValueError will be raised
         """
-        if (len(self._times)==0) or (len(self._times)==0):
+        if (len(self._times)==0) or (len(rhs._times)==0):
             raise NotImplemented
         if not self._times==rhs._times:
-            raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+            raise ValueError('self and rhs must have the same time points')
 
     def __add__(self, rhs):
         """
@@ -104,7 +274,11 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         elif isinstance(rhs, (int, float)):
             return TimeSeries([x + rhs for x in self._values], self._times)
         else:
+<<<<<<< HEAD
             raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
+=======
+            raise TypeError('rhs must be a TimeSeries instance')
+>>>>>>> jack_branch
 
     def __sub__(self, rhs):
         """
@@ -121,7 +295,11 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         elif isinstance(rhs, (int, float)):
             return TimeSeries([x - rhs for x in self._values], self._times)
         else:
+<<<<<<< HEAD
             raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
+=======
+            raise TypeError('rhs must be a TimeSeries instance')
+>>>>>>> jack_branch
 
     def __mul__(self, rhs):
         """
@@ -138,7 +316,11 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         elif isinstance(rhs, (int, float)):
             return TimeSeries([x * rhs for x in self._values], self._times)
         else:
+<<<<<<< HEAD
             raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
+=======
+            raise TypeError('rhs must be a TimeSeries instance')
+>>>>>>> jack_branch
 
     def __eq__(self, rhs):
         """
@@ -153,10 +335,10 @@ class TimeSeries(interfaces.SizedContainerTimeSeriesInterface):
             pairs = zip(self._values, rhs._values)
             return all([a==b for a, b in pairs])
         else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+            raise TypeError("{} must be a TimeSeries instance".format(str(rhs)))
 
 
-class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
+class ArrayTimeSeries(SizedContainerTimeSeriesInterface):
     """This ArrayTimeSeries class stores a single, ordered set of numerical data as numpy arrays. It inherites from the SizedContainerTimeSeriesInterface
     and hence from the TimeSeriesInterface."""
     def __init__(self, times, values):
@@ -261,8 +443,14 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         """
         if (len(self._times)==0) or (len(self._times)==0):
             raise NotImplemented
+<<<<<<< HEAD
         if not all(self._times==rhs._times):
             raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points or a number')
+=======
+        if not np.all(self._times==rhs._times):
+            raise ValueError('self and rhs must have the same time points')
+
+>>>>>>> jack_branch
     def __add__(self, rhs):
         """
         Element-wise addition of two timeseries instances
@@ -273,11 +461,19 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
+<<<<<<< HEAD
             return ArrayTimeSeries(self._values + rhs._values, self._times)
         elif isinstance(rhs, (int, float)):
             return ArrayTimeSeries([x + rhs for x in self._values], self._times)
         else:
             raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
+=======
+            return ArrayTimeSeries(self._times, self._values + rhs._values)
+        elif isinstance(rhs, (int, float)):
+            return ArrayTimeSeries(self._times, [x + rhs for x in self._values])
+        else:
+            raise TypeError('rhs must be a ArrayTimeSeries instance')
+>>>>>>> jack_branch
 
     def __sub__(self, rhs):
         """
@@ -289,11 +485,20 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
+<<<<<<< HEAD
             return ArrayTimeSeries(self._values - rhs._values, self._times)
         elif isinstance(rhs, (int, float)):
             return ArrayTimeSeries([x - rhs for x in self._values], self._times)
         else:
             raise TypeError(str(rhs)+' must be a TimeSeries instance or a number')
+=======
+            return ArrayTimeSeries(self._times, self._values - rhs._values)
+        elif isinstance(rhs, (int, float)):
+            return ArrayTimeSeries(self._times, [x - rhs for x in self._values])
+        else:
+            raise TypeError('rhs must be a ArrayTimeSeries instance')
+
+>>>>>>> jack_branch
 
     def __mul__(self, rhs):
         """
@@ -305,11 +510,17 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
+<<<<<<< HEAD
             return ArrayTimeSeries(self._values * rhs._values, self._times)
         elif isinstance(rhs, (int, float)):
             return ArrayTimeSeries([x*rhs for x in self._values], self._times)
+=======
+            return ArrayTimeSeries(self._times, self._values * rhs._values)
+        elif isinstance(rhs, (int, float)):
+            return ArrayTimeSeries(self._times, [x*rhs for x in self._values])
+>>>>>>> jack_branch
         else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+            raise TypeError('rhs must be a ArrayTimeSeries instance')
 
     def __eq__(self, rhs):
         """
@@ -321,11 +532,11 @@ class ArrayTimeSeries(interfaces.SizedContainerTimeSeriesInterface):
         """
         if isinstance(rhs, ArrayTimeSeries):
             ArrayTimeSeries._check_match_helper(self, rhs)
-            return (self._values == rhs._values)
+            return np.all(self._values == rhs._values)
         else:
-            raise TypeError(str(rhs)+' must be a TimeSeries instance')
+            raise TypeError('{} must be an ArrayTimeSeries instance'.format(str(rhs)))
 
-class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
+class SimulatedTimeSeries(StreamTimeSeriesInterface):
     """ This SimulatedTimeSeries class can produce items from a time series generated by a python generator. It inherites from the StreamTimeSeriesInterface
     and hence from the TimeSeriesInterface."""
     def __init__(self, gen):
@@ -428,13 +639,13 @@ class SimulatedTimeSeries(interfaces.StreamTimeSeriesInterface):
                         old_mu = mu
                         mu = old_mu + (value[1] - old_mu)/n
                         dev_accum += (value[1] - old_mu)*(value[1] - mu) 
-                        stddev = sqrt(dev_accum/(n-1))
+                        stddev = math.sqrt(dev_accum/(n-1))
                         yield (value[0], value[1], mu, stddev)
                     else:
                         old_mu = mu
                         mu = old_mu + (value - old_mu)/n
                         dev_accum += (value - old_mu)*(value - mu) 
-                        stddev = sqrt(dev_accum/(n-1))
+                        stddev = math.sqrt(dev_accum/(n-1))
                         yield (n-1, value, mu, stddev)
                 else:
                     if isinstance(value, tuple):

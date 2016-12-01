@@ -24,7 +24,11 @@ class StorageManagerInterface(abc.ABC):
     @abc.abstractmethod
     def size(self, id):
         """
+<<<<<<< HEAD
         Returns the size of a SizedContainerTimeSeriesInterface looked up by an id
+=======
+        Returns the size of a SizedContainerTimeSeriesInterface instance looked up by an id
+>>>>>>> jack_branch
         """
 
     @abc.abstractmethod
@@ -33,6 +37,10 @@ class StorageManagerInterface(abc.ABC):
         Returns a SizedContainerTimeSeriesInterface instance looked up by an id
         """
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> jack_branch
 class TimeSeriesInterface(abc.ABC):
     """
     This is the interface for a Timeseries. 
