@@ -20,9 +20,8 @@ File Description:
     -VantagePointDatabases: holds the vantage point databases created by pick_vantage_points.py and contains file 'vp' which stores the numbers of the vantage points
 
     
-Order in which to call files:
-      1. generate_time_series.py: takes no arguments
-      2. pick_vantage_points.py: takes an argument for number of vantage points to produce, i.e. to create 20 vantage points:
+Order in which to call files: 1. generate_time_series.py: takes no arguments
+     2. pick_vantage_points.py: takes an argument for number of vantage points to produce, i.e. to create 20 vantage points:
          Example: >> pick_vantage_points.py --n 20
          'n' is 20 by default if not supplied by the user
      
