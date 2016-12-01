@@ -2,3 +2,6 @@ jacks
 *.ipynb
 *.ipynb_checkpoints
 .idea/*
+*.dbdb
+
+timeseries/.cache/v/cache/lastfailed
