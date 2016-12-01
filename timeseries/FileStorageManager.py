@@ -5,16 +5,72 @@ import numpy as np
 import time
 
 class FileStorageManager(StorageManagerInterface):
+    """
+    Inherits the StorageManagerInterface ABC and implements it by putting 2-d numpy arrays with 64-bit floats
+    for both times and values onto disk.
+    It has store, get and size methods.
+    """
     def __init__(self, dbname):
+        """
+        Parameter:
+        ----------------
+        dbname: a string ending with ".dbdb"
+        """
         self.db = CreateDB(dbname=dbname)
 
     def store(self, id, ts):
+        """
+        Parameters:
+        ----------------
+        ts (TimeSeries or ArrayTimeSeries): the timeseries to store. Has to be a valid SizedContainerTimeSeries
+        id (int or str): the id for which the timeseries will be paird to
+
+        Note:
+        ----------------
+        1. For more specifications of ts requirement, please see "series" for more details
+        2. If the id appears to be a number, then it is stored as a string of numpy.float64. Foe example, 1, 1.0, "1" and
+        "1.0" are all the same keys.
+        3. If a key already exist in the database, then storing a timeseries associated with that key will overwrite the
+        previously stored timeseries.
+        """
         self.db.store_ts(ts=ts, id=id)
 
     def size(self, id):
+        """
+        Parameters:
+        ----------------
+        id (int or str): the id for which the desired length's timeseries was paird to
+
+        Returns:
+        ----------------
+        an interger indicating the size of the timeseries the id corresponds to
+
+        Note:
+        ----------------
+        1. If the id appears to be a number, then it is stored as a string of numpy.float64. Foe example, 1, 1.0, "1" and
+        "1.0" are all the same keys.
+        2. If the id does not exist, then a KeyError will be raised
+        3. When get_size is called, the key will also trigger caching
+        """
         return self.db.get_size(id=id)
 
     def get(self, id):
+        """
+        Parameters:
+        ----------------
+        id (int or str): the id for which the desired length's timeseries was paird to
+
+        Returns:
+        ----------------
+        an timeseries instance that corresponds to the id in the database
+
+        Note:
+        ----------------
+        1. If the id appears to be a number, then it is stored as a string of numpy.float64. Foe example, 1, 1.0, "1" and
+        "1.0" are all the same keys.
+        2. If the id does not exist, then a KeyError will be raised
+        3. When get_size is called, the key will also trigger caching
+        """
         return self.db.get_ts(id=id)
 
 
@@ -141,27 +197,6 @@ class CreateDB:
         """
         return len(self.get_ts(self._encode_id(id)))
 
-    ### Helper function to update the most frequently accessed cache
-    def _update_cache(self, id, ts):
-        """
-        Parameters:
-        ----------------
-        id (int or str): the standardized id passed from get_ts
-        ts: the looked up timeseries passed from get_ts
-        """
-        if id in self.count_accessed:
-            self.count_accessed[id] += 1 # add 1 to the access count if id already exist in cache
-        else:
-            self.count_accessed[id] = 1 # initiate the access count if id is new
-
-        if len(self.cache_mostAccessed) < self.size_cache:
-            self.cache_mostAccessed[id] = ts # when the cache is not full, keep adding the timeseries for quick access
-        else:
-            id_currMin = sorted(self.cache_mostAccessed, key=lambda k: self.count_accessed[k])[0] # when cache is full, sort the id's by the access count and grab the one with lowest count
-            if self.count_accessed[id_currMin] < self.count_accessed[id]:
-                del self.cache_mostAccessed[id_currMin] # if the corresponding min count is smaller than the current count, delete the min accessed ts in the cache
-                self.cache_mostAccessed[id] = ts # and add the newest one
-
     ### helper function to encode an id to a standardized str id
     def _encode_id(self, id):
         """
@@ -225,3 +260,24 @@ class CreateDB:
         except:
             raise ValueError("Cannot convert values {} into float".format(times_str))
         return series.TimeSeries(values=values, times=times)
+
+    ### Helper function to update the most frequently accessed cache
+    def _update_cache(self, id, ts):
+        """
+        Parameters:
+        ----------------
+        id (int or str): the standardized id passed from get_ts
+        ts: the looked up timeseries passed from get_ts
+        """
+        if id in self.count_accessed:
+            self.count_accessed[id] += 1 # add 1 to the access count if id already exist in cache
+        else:
+            self.count_accessed[id] = 1 # initiate the access count if id is new
+
+        if len(self.cache_mostAccessed) < self.size_cache:
+            self.cache_mostAccessed[id] = ts # when the cache is not full, keep adding the timeseries for quick access
+        else:
+            id_currMin = sorted(self.cache_mostAccessed, key=lambda k: self.count_accessed[k])[0] # when cache is full, sort the id's by the access count and grab the one with lowest count
+            if self.count_accessed[id_currMin] < self.count_accessed[id]:
+                del self.cache_mostAccessed[id_currMin] # if the corresponding min count is smaller than the current count, delete the min accessed ts in the cache
+                self.cache_mostAccessed[id] = ts # and add the newest one

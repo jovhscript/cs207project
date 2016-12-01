@@ -4,6 +4,89 @@ from series import *
 from interfaces import *
 from FileStorageManager import *
 
+class SMTimeSeriesTest(unittest.TestCase):
+    """
+    These tests concern the SMTimeSeries Class
+    """
+    def setUp(self):
+        self.ts = TimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5])
+        self.ts1 = TimeSeries([0, 1, 3.5, 5, 8], times=[0.5, 1, 2, 3, 10.5])
+        self.ts2 = TimeSeries([1, 1.5, 5], times=None)
+        self.tsArray = ArrayTimeSeries(times=[0.5, 1, 2, 3, 10.5], values=[-1, 0, 1.5, 4, 100])
+        self.tsArray1 = ArrayTimeSeries(times=[0.5, 1, 2, 3, 10.5], values=[0, 1, 3.5, 5, 8])
+
+    def test_init(self):
+        """
+        test if using __init__ way to construct a SMTimeSeries is the same as a TimeSeries
+        """
+        smts = SMTimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5])
+        self.assertEqual(smts.ts, self.ts)
+
+    def test_fromDB(self):
+        """
+        test if using from_db way to construct a SMTimeSeries is the same as a TimeSeries
+        """
+        smts = SMTimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5], id=1)
+        self.assertEqual(SMTimeSeries().from_db(1), smts.ts)
+        self.assertEqual(SMTimeSeries().from_db(smts.id), smts.ts)
+        self.assertEqual(smts.from_db(smts.id), TimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5]))
+
+    def test_add(self):
+        smts = SMTimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5])
+        smts1 = SMTimeSeries([0, 1, 3.5, 5, 8], times=[0.5, 1, 2, 3, 10.5], id=2)
+        out = smts + self.ts
+        out1 = smts + smts1
+        out2 = smts + self.tsArray
+        # check SMTimeSeries + TimeSeries
+        self.assertEqual(out.ts, self.ts + self.ts)
+        # check SMTimeseries + SMTimeseries
+        self.assertEqual(out1.ts, self.ts1 + smts.ts)
+        # check SMTimeseries + ArrayTimeSeries
+        self.assertEqual(out2.ts, self.ts + self.ts)
+        # check storage of SMTimeseries outs
+        self.assertEqual(SMTimeSeries().from_db(out1.id), out1.ts)
+
+
+    def test_sub(self):
+        smts = SMTimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5])
+        smts1 = SMTimeSeries([0, 1, 3.5, 5, 8], times=[0.5, 1, 2, 3, 10.5], id=2)
+        out = smts - self.ts
+        out1 = smts - smts1
+        out2 = smts - self.tsArray
+        # check SMTimeSeries - TimeSeries
+        self.assertEqual(out.ts, self.ts - self.ts)
+        # check SMTimeseries - SMTimeseries
+        self.assertEqual(out1.ts,  smts.ts - self.ts1)
+        # check SMTimeseries - ArrayTimeSeries
+        self.assertEqual(out2.ts, self.ts - self.ts)
+        # check storage of SMTimeseries outs
+        self.assertEqual(SMTimeSeries().from_db(out1.id), out1.ts)
+
+    def test_mul(self):
+        smts = SMTimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5])
+        smts1 = SMTimeSeries([0, 1, 3.5, 5, 8], times=[0.5, 1, 2, 3, 10.5], id=2)
+        out = smts * self.ts
+        out1 = smts * smts1
+        out2 = smts * self.tsArray
+        # check SMTimeSeries * TimeSeries
+        self.assertEqual(out.ts, self.ts * self.ts)
+        # check SMTimeseries * SMTimeseries
+        self.assertEqual(out1.ts, self.ts1 * smts.ts)
+        # check SMTimeseries * ArrayTimeSeries
+        self.assertEqual(out2.ts, self.ts * self.ts)
+        # check storage of SMTimeseries outs
+        self.assertEqual(SMTimeSeries().from_db(out1.id), out1.ts)
+
+    def test_eq(self):
+        smts = SMTimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5], id=1)
+        smts1 = SMTimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5], id=1)
+        smts2 = SMTimeSeries([-1, 0, 1.5, 4, 100], times=[0.5, 1, 2, 3, 10.5], id=2)
+        smts3 = SMTimeSeries([0, 1, 3.5, 5, 8], times=[0.5, 1, 2, 3, 10.5], id=2)
+        self.assertEqual(smts, smts1)
+        self.assertEqual(smts, smts2)
+        self.assertEqual(smts==smts1, True)
+        self.assertEqual(smts==smts3, False)
+        
 class test_FileStorageManager(unittest.TestCase):
 
     ### Setup the test database
@@ -179,6 +262,7 @@ def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(test_FileStorageManager))
     suite.addTest(unittest.makeSuite(test_CreateDB))
+    suite.addTest(unittest.makeSuite(SMTimeSeriesTest))
     return suite
 
 if __name__ == '__main__':
