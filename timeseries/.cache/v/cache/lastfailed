@@ -1,0 +1,6 @@
+{
+  "test_database.py": true,
+  "test_series.py::ArrayTimeSeriesTest::test_addition": true,
+  "test_series.py::ArrayTimeSeriesTest::test_multiplication": true,
+  "test_series.py::ArrayTimeSeriesTest::test_subtraction": true
+}
