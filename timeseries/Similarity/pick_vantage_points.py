@@ -1,5 +1,6 @@
 import sys
 import os.path
+import shutil
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 import distances
@@ -8,8 +9,10 @@ import random
 import BinarySearchDatabase
 from series import ArrayTimeSeries as ts
 import os
+import pickle
+import argparse
 
-def pick_vantage_points():
+def pick_vantage_points(arg):
     """
     Code which picks 20 vantage points and produces a database for each one.
     The database stores (key,value) pairs where:
@@ -18,7 +21,23 @@ def pick_vantage_points():
     
     returns: list of vantage points (integers from 0-999)
     """
-    vantage_pts = random.sample(range(0,1000),20)
+    try:
+        parser = argparse.ArgumentParser(description="vantage points")
+        parser.add_argument('--n', help='number of vantage points', type=int, default=20)
+            
+        args = parser.parse_args(arg)
+        num = args.n
+    except:
+        num = arg
+    
+    try:
+        shutil.rmtree('VantagePointDatabases')
+        os.mkdir('VantagePointDatabases')    
+    except:
+        os.mkdir('VantagePointDatabases')    
+        
+    
+    vantage_pts = random.sample(range(0,1000),num)
 
     for vantage_point in vantage_pts:
         try:
@@ -27,20 +46,17 @@ def pick_vantage_points():
         except:
             db1 = BinarySearchDatabase.connect("VantagePointDatabases/"+str(vantage_point)+".dbdb")
         
-        two = np.load("GeneratedTimeseries/Timeseries"+str(vantage_point)+".npy")
+        ts2 = pickle.load(open("GeneratedTimeseries/Timeseries"+str(vantage_point), "rb"))
         for i in range(1000):
             if i != vantage_point:
-                one = np.load("GeneratedTimeseries/Timeseries"+str(i)+".npy")
-                ts1 = ts(times=one[0],values=one[1])
-                ts2 = ts(times=two[0],values=two[1])
+                ts1 = pickle.load(open("GeneratedTimeseries/Timeseries"+str(i), "rb"))
                 dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
-                #print(dist)
                 db1.set(dist,str(i))
     
         db1.commit()
         db1.close()
         
-        f = open('vp', 'w')
+        f = open('VantagePointDatabases/vp', 'w')
         for i in vantage_pts:
             f.write(str(i)+"\n")
         f.close()
@@ -48,4 +64,5 @@ def pick_vantage_points():
     return vantage_pts    
 
 if __name__ == "__main__":
-    pick_vantage_points()
+    pick_vantage_points(sys.argv[1:])
+    

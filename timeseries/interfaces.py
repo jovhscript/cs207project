@@ -6,6 +6,33 @@ import abc
 
 from lazy import *
 
+class StorageManagerInterface(abc.ABC):
+    """
+    Storage Manager interface for part 8
+    """
+    @abc.abstractmethod
+    def store(self, id, t):
+        """
+        Stores a Sized Continer TimeSeries with a given key label
+
+        Parameters:
+        ----------------
+        id: an integer in numeric or string format
+        t: a SizedContainerTimeSeriesInterface instance
+        """
+
+    @abc.abstractmethod
+    def size(self, id):
+        """
+        Returns the size of a SizedContainerTimeSeriesInterface instance looked up by an id
+        """
+
+    @abc.abstractmethod
+    def get(self, id):
+        """
+        Returns a SizedContainerTimeSeriesInterface instance looked up by an id
+        """
+
 class TimeSeriesInterface(abc.ABC):
     """
     This is the interface for a Timeseries. 
