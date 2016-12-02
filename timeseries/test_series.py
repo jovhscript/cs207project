@@ -1,6 +1,6 @@
 
 import unittest
-from series import TimeSeries, ArrayTimeSeries, SimulatedTimeSeries
+from series import TimeSeries, ArrayTimeSeries, SimulatedTimeSeries, SMTimeSeries
 import numpy as np
 import math
 
@@ -437,75 +437,75 @@ class ArrayTimeSeriesTest(unittest.TestCase):
 
 
 class StreamingTimeSeriesTest(unittest.TestCase):
-	"""
-	These tests concern the SimulatedTimeSeries class.
-	"""
-	def test_noArgument(self):
-		'''
-		Verify that a TypeError is raised if no generator is parsed
-		'''
-		with self.assertRaises(TypeError):
-			SimulatedTimeSeries()
+    """
+    These tests concern the SimulatedTimeSeries class.
+    """
+    def test_noArgument(self):
+        '''
+        Verify that a TypeError is raised if no generator is parsed
+        '''
+        with self.assertRaises(TypeError):
+            SimulatedTimeSeries()
 
-	def test_notGenerator(self):
-		'''
-		Verify that a TypeError is raised if an object other than a generator is parsed
-		'''
-		with self.assertRaises(TypeError):
-			SimulatedTimeSeries([i for i in range(10)])
+    def test_notGenerator(self):
+        '''
+        Verify that a TypeError is raised if an object other than a generator is parsed
+        '''
+        with self.assertRaises(TypeError):
+            SimulatedTimeSeries([i for i in range(10)])
 
-	def test_valueOnlyGenerator(self):
-		'''
-		Check that we can produce timeseries with value only generator
-		'''
-		ts = SimulatedTimeSeries((i**2 for i in range(100)))
-		self.assertEqual(ts.produce(10), [0, 1, 4, 9, 16, 25, 36, 49, 64, 81])
+    def test_valueOnlyGenerator(self):
+        '''
+        Check that we can produce timeseries with value only generator
+        '''
+        ts = SimulatedTimeSeries((i**2 for i in range(100)))
+        self.assertEqual(ts.produce(10), [0, 1, 4, 9, 16, 25, 36, 49, 64, 81])
 
-	def test_timeValueGenerator(self):
-		'''
-		Check that we can produce timeseries with value only generator
-		'''
-		ts = SimulatedTimeSeries(((i,i**2) for i in range(100)))
-		self.assertEqual(ts.produce(10), [(0, 0), (1, 1), (2, 4), (3, 9), (4, 16), (5, 25), (6, 36), (7, 49), (8, 64), (9, 81)])
+    def test_timeValueGenerator(self):
+        '''
+        Check that we can produce timeseries with value only generator
+        '''
+        ts = SimulatedTimeSeries(((i,i**2) for i in range(100)))
+        self.assertEqual(ts.produce(10), [(0, 0), (1, 1), (2, 4), (3, 9), (4, 16), (5, 25), (6, 36), (7, 49), (8, 64), (9, 81)])
 
-	def test_onlineMeanTime(self):
-		'''
-		Verifies the online_mean function when times are generated
-		'''
-		ts = SimulatedTimeSeries(((i,i**2) for i in range(100)))
-		om = ts.online_mean()
-		self.assertEqual(om.produce(5), [(0, 0, 0.0), (1, 1, 0.5), (2, 4, 1.6666666666666667), (3, 9, 3.5), (4, 16, 6.0)])
+    def test_onlineMeanTime(self):
+        '''
+        Verifies the online_mean function when times are generated
+        '''
+        ts = SimulatedTimeSeries(((i,i**2) for i in range(100)))
+        om = ts.online_mean()
+        self.assertEqual(om.produce(5), [(0, 0, 0.0), (1, 1, 0.5), (2, 4, 1.6666666666666667), (3, 9, 3.5), (4, 16, 6.0)])
 
-	def test_onlineMeanNoTime(self):
-		'''
-		Verifies the online_mean function when no times are generated
-		'''
-		ts = SimulatedTimeSeries((i**2 for i in range(100)))
-		om = ts.online_mean()
-		self.assertEqual(om.produce(5), [(0, 0, 0.0), (1, 1, 0.5), (2, 4, 1.6666666666666667), (3, 9, 3.5), (4, 16, 6.0)])
+    def test_onlineMeanNoTime(self):
+        '''
+        Verifies the online_mean function when no times are generated
+        '''
+        ts = SimulatedTimeSeries((i**2 for i in range(100)))
+        om = ts.online_mean()
+        self.assertEqual(om.produce(5), [(0, 0, 0.0), (1, 1, 0.5), (2, 4, 1.6666666666666667), (3, 9, 3.5), (4, 16, 6.0)])
 
-	def test_onlineDevTime(self):
-		'''
-		Verifies the online_dev function when no times are generated
-		'''
-		ts = SimulatedTimeSeries(((i, i**2) for i in range(100)))
-		od = ts.online_dev()
-		self.assertEqual(od.produce(5), [(0, 0, 0, 0), (1, 1, 0.5, 0.7071067811865476), (2, 4, 1.6666666666666667, 2.0816659994661326), (3, 9, 3.5, 4.041451884327381), (4, 16, 6.0, 6.59545297913646)])
+    def test_onlineDevTime(self):
+        '''
+        Verifies the online_dev function when no times are generated
+        '''
+        ts = SimulatedTimeSeries(((i, i**2) for i in range(100)))
+        od = ts.online_dev()
+        self.assertEqual(od.produce(5), [(0, 0, 0, 0), (1, 1, 0.5, 0.7071067811865476), (2, 4, 1.6666666666666667, 2.0816659994661326), (3, 9, 3.5, 4.041451884327381), (4, 16, 6.0, 6.59545297913646)])
 
-	def test_onlineDevNoTime(self):
-		'''
-		Verifies the online_mean function when no times are generated
-		'''
-		ts = SimulatedTimeSeries((i**2 for i in range(100)))
-		od = ts.online_dev()
-		self.assertEqual(od.produce(5), [(0, 0, 0, 0), (1, 1, 0.5, 0.7071067811865476), (2, 4, 1.6666666666666667, 2.0816659994661326), (3, 9, 3.5, 4.041451884327381), (4, 16, 6.0, 6.59545297913646)])
-		
+    def test_onlineDevNoTime(self):
+        '''
+        Verifies the online_mean function when no times are generated
+        '''
+        ts = SimulatedTimeSeries((i**2 for i in range(100)))
+        od = ts.online_dev()
+        self.assertEqual(od.produce(5), [(0, 0, 0, 0), (1, 1, 0.5, 0.7071067811865476), (2, 4, 1.6666666666666667, 2.0816659994661326), (3, 9, 3.5, 4.041451884327381), (4, 16, 6.0, 6.59545297913646)])
+
 def suite():
-	suite = unittest.TestSuite()
-	suite.addTest(unittest.makeSuite(TimeSeriesTest))
-	suite.addTest(unittest.makeSuite(ArrayTimeSeriesTest))
-	suite.addTest(unittest.makeSuite(StreamingTimeSeriesTest))
-	return suite
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TimeSeriesTest))
+    suite.addTest(unittest.makeSuite(ArrayTimeSeriesTest))
+    suite.addTest(unittest.makeSuite(StreamingTimeSeriesTest))
+    return suite
 
 
 if __name__ == '__main__':
