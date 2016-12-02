@@ -1,7 +1,11 @@
-import sys
+import sys, inspect
 import os.path
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(os.path.dirname(currentdir))
+sys.path.insert(0,parentdir) 
+
 import unittest
 from pytest import raises
 import BinarySearchDatabase 
@@ -53,10 +57,12 @@ class DataBase_tests(unittest.TestCase):
     def test_generate_time_series(self):
         generate_time_series()
         for i in range(1000):
-            pickle.load(open("GeneratedTimeseries/Timeseries"+str(i), "rb"))
+            with open("GeneratedTimeseries/Timeseries"+str(i), "rb") as f:
+                pickle.load(f)
             
         with raises(FileNotFoundError):
-            pickle.load(open("GeneratedTimeseries/Timeseries"+str(1000), "rb"))
+            with open("GeneratedTimeseries/Timeseries"+str(1000), "rb") as f:
+                pickle.load(f)
             
         
     def test_pick_vantage_points(self):

@@ -25,10 +25,12 @@ def sanity_check(filename,n):
     """
     ans = []
     d = []
-    ts1 = pickle.load(open(filename, "rb"))
+    with open(filename, "rb") as f:
+        ts1 = pickle.load(f)
     
     for i in range(1000):
-        ts2 = pickle.load(open("GeneratedTimeseries/Timeseries"+str(i), "rb"))     
+        with open("GeneratedTimeseries/Timeseries"+str(i), "rb") as f:
+            ts2 = pickle.load(f)     
         dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
         d.append([dist,"Timeseries"+str(i)])
         
@@ -62,7 +64,8 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius):
     #find similiarity between these light curves and given light curve
     distance = []
     for l in light_curves_in_radius:
-        ts2 = pickle.load(open("GeneratedTimeseries/Timeseries"+str(l), "rb"))
+        with open("GeneratedTimeseries/Timeseries"+str(l), "rb") as f:
+            ts2 = pickle.load(f)
         dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
         distance.append([dist,"Timeseries"+str(l)]) 
     return distance
@@ -83,12 +86,14 @@ def find_most_similiar(filename,n, vantage_pts):
     file_names = []
     
     #load the given file
-    ts1 = pickle.load(open(filename, "rb"))
+    with open(filename, "rb") as f:
+        ts1 = pickle.load(f)
        
     #find the most similiar vantage point = d 
     vantage_pts_dist = []
     for i in vantage_pts:
-        ts2 = pickle.load(open("GeneratedTimeseries/Timeseries"+str(i), "rb"))
+        with open("GeneratedTimeseries/Timeseries"+str(i), "rb") as f:
+            ts2 = pickle.load(f)
         dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
         vantage_pts_dist.append([dist,i])
     
@@ -147,8 +152,10 @@ def similarity_program(arg):
             os.mkdir(savefolder)          
 
         for i in ts:
-            ts1 = pickle.load(open("GeneratedTimeseries/"+str(i), "rb"))
-            pickle.dump(ts1, open(str(savefolder)+"/"+str(i),'wb'))
+            with open("GeneratedTimeseries/"+str(i), "rb") as f:
+                ts1 = pickle.load(f)
+            with open(str(savefolder)+"/"+str(i),'wb') as f2:
+                pickle.dump(ts1, f2)
     else:
         print(ts)
                         

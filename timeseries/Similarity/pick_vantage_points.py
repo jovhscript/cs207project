@@ -46,10 +46,12 @@ def pick_vantage_points(arg):
         except:
             db1 = BinarySearchDatabase.connect("VantagePointDatabases/"+str(vantage_point)+".dbdb")
         
-        ts2 = pickle.load(open("GeneratedTimeseries/Timeseries"+str(vantage_point), "rb"))
+        with open("GeneratedTimeseries/Timeseries"+str(vantage_point), "rb") as f:
+            ts2 = pickle.load(f)
         for i in range(1000):
             if i != vantage_point:
-                ts1 = pickle.load(open("GeneratedTimeseries/Timeseries"+str(i), "rb"))
+                with open("GeneratedTimeseries/Timeseries"+str(i), "rb") as f:
+                    ts1 = pickle.load(f)
                 dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
                 db1.set(dist,str(i))
     

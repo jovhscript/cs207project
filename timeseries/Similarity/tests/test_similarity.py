@@ -1,7 +1,11 @@
-import sys
+import sys, inspect
 import os.path
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(os.path.dirname(currentdir))
+sys.path.insert(0,parentdir) 
+
 import unittest
 from pytest import raises
 from series import TimeSeries, ArrayTimeSeries, SimulatedTimeSeries

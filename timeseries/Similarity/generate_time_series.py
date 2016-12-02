@@ -21,7 +21,8 @@ def generate_time_series():
     #script to generate and store 1000 timeseries
     for i in range(1000):
         x = distances.tsmaker(0.5, 0.15, 0.1)
-        pickle.dump(x, open("GeneratedTimeseries/Timeseries"+str(i),'wb'))
+        with open("GeneratedTimeseries/Timeseries"+str(i),'wb') as f:
+            pickle.dump(x, f)
         
 if __name__ == "__main__":
     generate_time_series()
