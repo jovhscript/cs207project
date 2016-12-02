@@ -10,6 +10,10 @@ import os
 import distances
 import sys
 from pick_vantage_points import pick_vantage_points
+import pickle
+import argparse
+import shutil
+
 
 
 def sanity_check(filename,n):
@@ -21,14 +25,14 @@ def sanity_check(filename,n):
     """
     ans = []
     d = []
-    given_file = np.load(filename)
-    ts1 = ts(times=given_file[0],values=given_file[1]) 
+    with open(filename, "rb") as f:
+        ts1 = pickle.load(f)
     
     for i in range(1000):
-        two = np.load("GeneratedTimeseries/Timeseries"+str(i)+".npy")
-        ts2 = ts(times=two[0],values=two[1])        
+        with open("GeneratedTimeseries/Timeseries"+str(i), "rb") as f:
+            ts2 = pickle.load(f)     
         dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
-        d.append([dist,"Timeseries"+str(i)+".npy"])
+        d.append([dist,"Timeseries"+str(i)])
         
     d.sort(key=lambda x: x[0])
     for i in range(1,n+1):
@@ -60,10 +64,10 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius):
     #find similiarity between these light curves and given light curve
     distance = []
     for l in light_curves_in_radius:
-        two = np.load("GeneratedTimeseries/Timeseries"+str(l)+".npy")
-        ts2 = ts(times=two[0],values=two[1])
+        with open("GeneratedTimeseries/Timeseries"+str(l), "rb") as f:
+            ts2 = pickle.load(f)
         dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
-        distance.append([dist,"Timeseries"+str(l)+".npy"]) 
+        distance.append([dist,"Timeseries"+str(l)]) 
     return distance
 
     
@@ -82,14 +86,14 @@ def find_most_similiar(filename,n, vantage_pts):
     file_names = []
     
     #load the given file
-    given_file = np.load(filename)
-    ts1 = ts(times=given_file[0],values=given_file[1])
+    with open(filename, "rb") as f:
+        ts1 = pickle.load(f)
        
     #find the most similiar vantage point = d 
     vantage_pts_dist = []
     for i in vantage_pts:
-        two = np.load("GeneratedTimeseries/Timeseries"+str(i)+".npy")
-        ts2 = ts(times=two[0],values=two[1])
+        with open("GeneratedTimeseries/Timeseries"+str(i), "rb") as f:
+            ts2 = pickle.load(f)
         dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
         vantage_pts_dist.append([dist,i])
     
@@ -111,52 +115,54 @@ def find_most_similiar(filename,n, vantage_pts):
         
     return file_names
 
-def similarity_program():
+def similarity_program(arg):
     """This is a command line program that finds similiar timeseries"""
-    
-    print("TimeSeries Similiarity Search")
     vp = []
-    with open('vp') as f:
+    with open('VantagePointDatabases/vp') as f:
         for line in f:
-            vp.append(int(line.rstrip('\n')))
+            vp.append(int(line.rstrip('\n')))    
     
-    keep_searching = True
-    while keep_searching:
-        
-        #Ensure that the file given is valid
-        input_var = "GeneratedTimeseries/"+input("Enter timeseries filename: ")
-        while not os.path.isfile(input_var):
-            input_var = input("Enter valid timeseries filename: ")
-           
-        #Ensure that the number of similiar filenames supplied is between 1 and 20
-        flag = False
-        while flag == False:
-            num = input("Enter number of filenames to find: ")
-            try:
-                num = int(num)
-                if  num <= 20 and num >= 1:
-                    flag = True
-                else:
-                    print("Invalid number, need integer between 1 and 20")
-            except ValueError:
-                print("Invalid number, need integer between 1 and 20")
-                
-        
-        print(find_most_similiar(input_var,num, vp))
+    parser = argparse.ArgumentParser(description="TimeSeries Similiarity Search")
+    parser.add_argument('timeseries', help="TimeSeries", type=str)
+    parser.add_argument('--n', help='finds n most similiar timeseries', type=int, default=1)
+    parser.add_argument('--save', help='Save results?', type=bool, default=False)
+    parser.add_argument('--savefolder', help='Where to save result', type=str, default='SimilaritySearchResults')
     
-    
-        #User inputs whether to search again or end the program
-        input_var = input("Search Again? (Yes/No): ")
-        while input_var != 'Yes' and input_var != 'No':
-            input_var = input("Search Again? (Enter Yes or No): ")
-            
-        if input_var == 'No':
-            keep_searching = False    
+    args = parser.parse_args(arg)
+    input_var = "GeneratedTimeseries/"+args.timeseries
+    n = args.n
+    save = args.save
+    savefolder = args.savefolder
 
+    #Ensure that the file given is valid
+    if not os.path.isfile(input_var):
+        return "Invalid timeseries filename"
+      
+    if n < 1 or n > len(vp):
+        return "N must be between 1 and # vantage points"
+          
+    
+    ts = find_most_similiar(input_var,n, vp)
+    
+    if save == True:
+        if os.path.isdir(savefolder):
+            shutil.rmtree(savefolder)
+            os.mkdir(savefolder) 
+        else:
+            os.mkdir(savefolder)          
 
+        for i in ts:
+            with open("GeneratedTimeseries/"+str(i), "rb") as f:
+                ts1 = pickle.load(f)
+            with open(str(savefolder)+"/"+str(i),'wb') as f2:
+                pickle.dump(ts1, f2)
+    else:
+        print(ts)
+                        
+        
 
 if __name__ == "__main__":
-    similarity_program()
+    similarity_program(sys.argv[1:])
         
 
             

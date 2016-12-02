@@ -24,7 +24,7 @@ class StorageManagerInterface(abc.ABC):
     @abc.abstractmethod
     def size(self, id):
         """
-        Returns the size of a SizedContainerTimeSeriesInterface looked up by an id
+        Returns the size of a SizedContainerTimeSeriesInterface instance looked up by an id
         """
 
     @abc.abstractmethod
