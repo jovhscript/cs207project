@@ -4,7 +4,7 @@ import threading
 
 from BinarySearchDatabase import *
 import find_most_similiar
-
+from tstojson import *
 with open('VantagePointDatabases/vp') as f:
     vp = []
     for line in f:
@@ -18,12 +18,20 @@ def db_client(sock, client_addr):
         print("msg", msg)
         if not msg:
             break
-        ts_name, n = msg.decode().split(' ')
-        print("ts: {}, n closest: {}".format(ts_name, n))
-        print(vp)
-        tss = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_name, int(n), vp)
-        print(tss)
-        sock.sendall(str(tss).encode())
+        ts_interest, n = msg.decode().split('/')
+        try:
+            print('here')
+            ts_interest = sdecode(ts_interest)
+            js = True
+        except:
+            js = False
+        print("ts: {}, n closest: {}".format(ts_interest, n))
+        if js:
+            tss_to_return = find_most_similiar.find_most_similiar(ts_interest, int(n), vp, False)
+        else:
+            tss_to_return = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_interest, int(n), vp)
+        print(tss_to_return)
+        sock.sendall(str(tss_to_return).encode())
     print('Client closed connection') 
     sock.close()
 

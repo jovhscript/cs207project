@@ -71,7 +71,7 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius):
     return distance
 
     
-def find_most_similiar(filename,n, vantage_pts):
+def find_most_similiar(filename,n, vantage_pts, isfile=True):
     """
     Finds n most similiar time series to the time series of interest (filename)
     by using the supplied vantage points
@@ -86,8 +86,11 @@ def find_most_similiar(filename,n, vantage_pts):
     file_names = []
     
     #load the given file
-    with open(filename, "rb") as f:
-        ts1 = pickle.load(f)
+    if isfile:
+        with open(filename, "rb") as f:
+            ts1 = pickle.load(f)
+    else:
+        ts1 = filename
        
     #find the most similiar vantage point = d 
     vantage_pts_dist = []

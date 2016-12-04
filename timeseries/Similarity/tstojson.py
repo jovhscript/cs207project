@@ -14,3 +14,14 @@ def decode(json_object):
         d = json.load(infile)
     return ts(d['times'], d['values'])
 
+def sdecode(json_string):
+    d = json.loads(json_string)
+    return ts(d['times'], d['values'])
+
+def sencode(json_object):
+    d_str = ''
+    with open(json_object, 'r') as file:
+        for line in file:
+            d_str+=line.strip('\n')
+    return d_str
+
