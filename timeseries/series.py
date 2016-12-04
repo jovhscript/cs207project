@@ -375,6 +375,8 @@ class ArrayTimeSeries(SizedContainerTimeSeriesInterface):
             else:
                 self._times = np.arange(0,len(self._values))
             self.timeseries = np.array(list(zip(self._times, self._values)))
+    def __json__(self):
+        return {'times': [x.item() for x in self._times], 'values': [x.item() for x in self._values]}
 
     def interpolate(self, times):
         """
