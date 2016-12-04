@@ -20,7 +20,6 @@ def db_client(sock, client_addr):
             break
         ts_interest, n = msg.decode().split('/')
         try:
-            print('here')
             ts_interest = sdecode(ts_interest)
             js = True
         except:
