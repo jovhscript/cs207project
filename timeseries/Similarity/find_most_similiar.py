@@ -112,9 +112,9 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True):
                 all_pts_to_check.append(j)
                 
     all_pts_to_check.sort(key=lambda x: x[0])
-    
-    for i in range(1,n+1): #ignore given timeseries 
-        file_names.append(all_pts_to_check[i][1])  
+
+    for i in range(0,n): #ignore given timeseries
+        file_names.append(all_pts_to_check[i])  
         
     return file_names
 

@@ -1,14 +1,19 @@
 import sys
 from socket import socket, AF_INET, SOCK_STREAM
 from concurrent.futures import ThreadPoolExecutor
-def fetch(ts, n):
+from tstojson import *
+def fetch(ts_, n):
     s = socket(AF_INET, SOCK_STREAM)
     s.connect(('localhost', 15000))
     if n == 1:
-        print("Checking the closest timeseries in the database to {}".format(ts))
+        print("Checking the closest timeseries in the database to {}".format(ts_))
     else:
-        print("Checking the {} closest timeseries in the database to {}".format(n, ts))
-    s.send("{}/{}".format(ts, str(n)).encode())
+        print("Checking the {} closest timeseries in the database to {}".format(n, ts_))
+    try:
+        ts_ = sencode(ts_)
+    except:
+        pass
+    s.send("{}/{}".format(ts_, str(n)).encode())
     print("Request sent to server")
     return s.recv(65536)
 
@@ -19,5 +24,5 @@ while message[0] != 'quit' and message[0] != 'exit':
 # while True:
     t = pool.submit(fetch, message[0], message[1])
     thrs.append(t)
-    print('Results:', str(thrs[-1].result().decode()))
+    print('Results:', json.loads((thrs[-1].result().decode())))
     message = input('TS and N: ').split('/')

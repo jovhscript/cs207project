@@ -30,7 +30,7 @@ def db_client(sock, client_addr):
         else:
             tss_to_return = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_interest, int(n), vp)
         print(tss_to_return)
-        sock.sendall(str(tss_to_return).encode())
+        sock.sendall(json.dumps(tss_to_return).encode())
     print('Client closed connection') 
     sock.close()
 
