@@ -4,7 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 from tstojson import *
 def fetch(ts_, n):
     s = socket(AF_INET, SOCK_STREAM)
-    s.connect(('localhost', 15000))
+    s.connect(('54.91.110.69', 80))
+    # s.connect(('localhost', 15000))
     if n == 1:
         print("Checking the closest timeseries in the database to {}".format(ts_))
     else:
