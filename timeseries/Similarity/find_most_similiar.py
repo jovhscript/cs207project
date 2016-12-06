@@ -5,6 +5,7 @@ sys.path.append(
 import numpy as np
 import random
 import BinarySearchDatabase
+import RedBlackSearchDatabase
 from series import ArrayTimeSeries as ts
 import os
 import distances
@@ -54,7 +55,8 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius):
     Returns: list of tuples (distance, timeseries id) in sorted order
     """
     #open database for that vantage point
-    db = BinarySearchDatabase.connect("VantagePointDatabases/"+str(closest_vantage_pt)+".dbdb")
+    #db = BinarySearchDatabase.connect("VantagePointDatabases/"+str(closest_vantage_pt)+".dbdb")
+    db = RedBlackSearchDatabase.connect("VantagePointDatabases/"+str(closest_vantage_pt)+".dbdb")
     
     #find all light curves within 2d of the vantage point
     light_curves_in_radius = db.get_nodes_less_than(radius)
