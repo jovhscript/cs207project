@@ -4,8 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 from tstojson import *
 def fetch(ts_, n):
     s = socket(AF_INET, SOCK_STREAM)
-    s.connect(('54.227.230.12', 80))
-    # s.connect(('localhost', 15000))
+    # s.connect(('54.164.101.248', 80))
+    s.connect(('localhost', 15000))
     if n == 1:
         print("Checking the closest timeseries in the database to {}".format(ts_))
     else:
@@ -16,14 +16,13 @@ def fetch(ts_, n):
         pass
     s.send("{}/{}".format(ts_, str(n)).encode())
     print("Request sent to server")
-    return s.recv(65536)
+    return json.loads(s.recv(65536).decode())
 
-pool = ThreadPoolExecutor(20)
-thrs=[]
-message = input('TS and N: ').split('/')
-while message[0] != 'quit' and message[0] != 'exit':
-# while True:
-    t = pool.submit(fetch, message[0], message[1])
-    thrs.append(t)
-    print('Results:', json.loads((thrs[-1].result().decode())))
-    message = input('TS and N: ').split('/')
+# pool = ThreadPoolExecutor(20)
+# thrs=[]
+# message = input('TS and N: ').split('/')
+# while message[0] != 'quit' and message[0] != 'exit':
+# # while True:
+#     t = fetch(message[0], message[1])
+#     print('Results:', json.loads((t)))
+#     message = input('TS and N: ').split('/')

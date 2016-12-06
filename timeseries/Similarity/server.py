@@ -46,7 +46,9 @@ def db_server(addr):
         client_sock, client_addr = sock.accept()
         pool.submit(db_client, client_sock, client_addr)
         
-db_server(('172.31.53.79', 80))
-# db_server(('', 15000))
+# db_server(('172.31.53.79', 80))
+def launch():
+    db_server(('', 15000))
 
+launch()
 
