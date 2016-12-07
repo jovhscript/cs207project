@@ -2,13 +2,35 @@
 
 <html>
 	<title>UPLOAD SEARCH</title>
-
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
+          rel="stylesheet">
+  <script type=text/javascript>
+    $(function() {
+      $('a#requestTS').bind('click', function() {
+        $.getJSON("/search_upload/results", {},
+        	function(data) {
+          $("#tss").text(data.result);
+        });
+        return false;
+      });
+    });
+  </script>
 	<body>
 		<h1 style='color:blue'>Search by File </h1>
 		<p>
 		Please choose the Timeseries you which to find similar ones to as a JSON file:
 		<br>
-		<input type="file" id="myFile">
+		<form action="/search_upload/results" method="post" enctype = "multipart/form-data">
+  			<input type="file" name="ts">
+  			<input type="submit" value= "Upload">
+		</form>
 		</p>
+		<br>
+		<span>{{output}}</span>
+		<br>
+		<br>
+		<br>
+		<button><a href="/" id="homebutton">Back Home</a></button>
     </body>
 </html>

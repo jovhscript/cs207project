@@ -15,10 +15,10 @@ def db_client(sock, client_addr):
     print('Got connection from', client_addr) 
     while True:
         msg = sock.recv(65536)
-        print("msg", msg)
+        # print("msg", msg)
         if not msg:
             break
-        ts_interest, n = msg.decode().split('/')
+        ts_interest, n = msg.decode().split('|')
         try:
             ts_interest = sdecode(ts_interest)
             js = True

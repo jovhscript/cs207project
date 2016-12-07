@@ -14,7 +14,7 @@ def fetch(ts_, n):
         ts_ = sencode(ts_)
     except:
         pass
-    s.send("{}/{}".format(ts_, str(n)).encode())
+    s.send("{}|{}".format(ts_, str(n)).encode())
     print("Request sent to server")
     return json.loads(s.recv(65536).decode())
 
