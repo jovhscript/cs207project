@@ -18,11 +18,9 @@ def fetch(ts_, n):
     print("Request sent to server")
     return json.loads(s.recv(65536).decode())
 
-# pool = ThreadPoolExecutor(20)
-# thrs=[]
-# message = input('TS and N: ').split('/')
-# while message[0] != 'quit' and message[0] != 'exit':
-# # while True:
-#     t = fetch(message[0], message[1])
-#     print('Results:', json.loads((t)))
-#     message = input('TS and N: ').split('/')
+if __name__ == '__main__':
+    message = input('TS and N: ').split('|')
+    while message[0] != 'quit' and message[0] != 'exit':
+        t = fetch(message[0], message[1])
+        print('Results:', json.loads((t)))
+        message = input('TS and N: ').split('|')
