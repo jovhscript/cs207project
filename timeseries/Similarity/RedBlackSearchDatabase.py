@@ -272,7 +272,7 @@ class RedBlackTree(BinaryTree):
                                                    left_ref = RedBlackNodeRef(),
                                                    right_ref = RedBlackNodeRef(),
                                                    color = node.color)
-            newright_left_ref = RedBlackNodeRef(referent = newleft_right)
+            newright_left_ref = RedBlackNodeRef(referent = newright_left)
         else:
             newright_left_ref = RedBlackNodeRef()
                                         

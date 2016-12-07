@@ -10,7 +10,7 @@ from series import ArrayTimeSeries as ts
 import os
 import distances
 import sys
-from pick_vantage_points import pick_vantage_points
+#from pick_vantage_points import pick_vantage_points
 import pickle
 import argparse
 import shutil
@@ -42,7 +42,7 @@ def sanity_check(filename,n):
     return ans
 
 
-def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius):
+def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype='bstree'):
     """
     Given a vantage point and a radius, find the points that fall within the
     circle around the vantage point. Then calculates the distance from all of these
@@ -54,9 +54,17 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius):
     
     Returns: list of tuples (distance, timeseries id) in sorted order
     """
+    if dbtype == 'bstree':
+        dbdir = 'VantagePointDatabases'
+        #open database for that vantage point
+        db = BinarySearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(closest_vantage_pt)))
+    elif dbtype == 'rbstree':
+        dbdir = 'VantagePointDatabases_RedBlack'
+        #open the redblacksearch database for that vantage point
+        db = RedBlackSearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(closest_vantage_pt)))
     #open database for that vantage point
     #db = BinarySearchDatabase.connect("VantagePointDatabases/"+str(closest_vantage_pt)+".dbdb")
-    db = RedBlackSearchDatabase.connect("VantagePointDatabases/"+str(closest_vantage_pt)+".dbdb")
+    #db = RedBlackSearchDatabase.connect("VantagePointDatabases/"+str(closest_vantage_pt)+".dbdb")
     
     #find all light curves within 2d of the vantage point
     light_curves_in_radius = db.get_nodes_less_than(radius)
@@ -72,8 +80,48 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius):
         distance.append([dist,"Timeseries"+str(l)]) 
     return distance
 
+def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype = 'bstree'):
+    """
+    Given a vantage point and a radius, find the points that fall within the
+    circle around the vantage point. Then calculates the distance from all of these
+    points to the timeseries of interest.
     
-def find_most_similiar(filename,n, vantage_pts, isfile=True):
+    closest_vantage_pt: number of the vantage point being considered
+    ts1: timeseries of interest
+    radius: radius of circle to consider
+    
+    Returns: list of tuples (distance, timeseries id) in sorted order
+    """
+
+    if dbtype == 'bstree':
+        dbdir = 'VantagePointDatabases'
+        #open database for that vantage point
+        db = BinarySearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(closest_vantage_pt)))
+    elif dbtype == 'rbstree':
+        dbdir = 'VantagePointDatabases_RedBlack'
+        #open the redblacksearch database for that vantage point
+        db = RedBlackSearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(closest_vantage_pt)))
+
+    #open database for that vantage point
+    #db = BinarySearchDatabase.connect("VantagePointDatabases/"+str(closest_vantage_pt)+".dbdb")
+    #db = RedBlackSearchDatabase.connect("VantagePointDatabases/"+str(closest_vantage_pt)+".dbdb")
+    
+    #find all light curves within 2d of the vantage point
+    light_curves_in_radius = db.get_nodes_less_than(radius)
+    light_curves_in_radius.append(str(closest_vantage_pt)) # add in the vantage pt
+    db.close()    
+    
+    #find similiarity between these light curves and given light curve
+    distance = []
+    for l in light_curves_in_radius:
+        with open("GeneratedTimeseries/Timeseries"+str(l), "rb") as f:
+            ts2 = pickle.load(f)
+        dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
+        distance.append([dist,"Timeseries"+str(l)]) 
+    return distance
+
+
+def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'bstree'):
     """
     Finds n most similiar time series to the time series of interest (filename)
     by using the supplied vantage points
@@ -108,7 +156,7 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True):
     for i in range(n):
         closest_vantage_pt = vantage_pts_dist[i][1]
         radius = 2*vantage_pts_dist[i][0]
-        pts_in_radius = find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius)
+        pts_in_radius = find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype)
         for j in pts_in_radius:
             if j not in all_pts_to_check:
                 all_pts_to_check.append(j)
@@ -120,10 +168,16 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True):
         
     return file_names
 
-def similarity_program(arg):
+def similarity_program(arg, dbtype = 'bstree'):
     """This is a command line program that finds similiar timeseries"""
+    if dbtype == 'bstree':
+        dbdir = 'VantagePointDatabases'
+    elif dbtype == 'rbstree':
+        dbdir = 'VantagePointDatabases_RedBlack'
+
     vp = []
-    with open('VantagePointDatabases/vp') as f:
+    #with open('VantagePointDatabases/vp') as f:
+    with open('%s/vp'%dbdir) as f:
         for line in f:
             vp.append(int(line.rstrip('\n')))    
     

@@ -7,12 +7,13 @@ import distances
 import numpy as np
 import random
 import BinarySearchDatabase
+import RedBlackSearchDatabase
 from series import ArrayTimeSeries as ts
 import os
 import pickle
 import argparse
 
-def pick_vantage_points(arg):
+def pick_vantage_points(arg, dbtype = 'bstree'):
     """
     Code which picks 20 vantage points and produces a database for each one.
     The database stores (key,value) pairs where:
@@ -29,22 +30,37 @@ def pick_vantage_points(arg):
         num = args.n
     except:
         num = arg
-    
+
+    if dbtype == 'bstree':
+        dbdir = 'VantagePointDatabases'
+    elif dbtype == 'rbstree':
+        dbdir = 'VantagePointDatabases_RedBlack'
+    else:
+        raise ValueError('dbtype %s not recognized'%dbtype)
+
     try:
-        shutil.rmtree('VantagePointDatabases')
-        os.mkdir('VantagePointDatabases')    
+        shutil.rmtree(dbdir)
+        os.mkdir(dbdir)    
     except:
-        os.mkdir('VantagePointDatabases')    
-        
+        os.mkdir(dbdir)    
     
     vantage_pts = random.sample(range(0,1000),num)
 
     for vantage_point in vantage_pts:
-        try:
-            os.remove("VantagePointDatabases/"+str(vantage_point)+".dbdb")
-            db1 = BinarySearchDatabase.connect("VantagePointDatabases/"+str(vantage_point)+".dbdb")
-        except:
-            db1 = BinarySearchDatabase.connect("VantagePointDatabases/"+str(vantage_point)+".dbdb")
+        if dbtype == 'bstree':
+            try:
+                os.remove("%s/%s.dbdb"%(dbdir, str(vantage_point)))
+                
+                db1 = BinarySearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(vantage_point)))
+            except:
+                db1 = BinarySearchDatabase.connect("%s/%s.dbdb"%(dbdir,str(vantage_point)))
+        elif dbtype == 'rbstree':
+            try:
+                os.remove("%s/%s.dbdb"%(dbdir, str(vantage_point)))
+                
+                db1 = RedBlackSearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(vantage_point)))
+            except:
+                db1 = RedBlackSearchDatabase.connect("%s/%s.dbdb"%(dbdir,str(vantage_point)))
         
         with open("GeneratedTimeseries/Timeseries"+str(vantage_point), "rb") as f:
             ts2 = pickle.load(f)
@@ -58,7 +74,8 @@ def pick_vantage_points(arg):
         db1.commit()
         db1.close()
         
-        f = open('VantagePointDatabases/vp', 'w')
+        #f = open('VantagePointDatabases/vp', 'w')
+        f = open('%s/vp'%dbdir, 'w')
         for i in vantage_pts:
             f.write(str(i)+"\n")
         f.close()
@@ -67,4 +84,5 @@ def pick_vantage_points(arg):
 
 if __name__ == "__main__":
     pick_vantage_points(sys.argv[1:])
+    #pick_vantage_points(sys.argv[1:], dbtype='rbstree')
     
