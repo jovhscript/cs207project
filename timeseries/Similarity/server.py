@@ -18,11 +18,11 @@ def db_client(sock, client_addr):
         # print("msg", msg)
         if not msg:
             break
-        ts_interest, n = msg.decode().split('|')
-        try:
+        ts_interest, n, typ = msg.decode().split('|')
+        if typ == 'json':
             ts_interest = sdecode(ts_interest)
             js = True
-        except:
+        else:
             js = False
         print("ts: {}, n closest: {}".format(ts_interest, n))
         if js:

@@ -21,7 +21,7 @@ def search_index():
         return jsonify(result='Invalid Index. Try again.')
     n = request.args.get('n', 0, type=int)
     print(i,n)
-    res = client.fetch('Timeseries'+str(i), n)
+    res = client.fetch_byindex('Timeseries'+str(i), n)
     print(res)
     return jsonify(result=res)
 
@@ -39,7 +39,7 @@ def search_upload():
         f=request.files['ts']
         os.mkdir('tmp/')
         f.save('tmp/'+f.filename)
-        res = client.fetch('tmp/'+f.filename, 1)
+        res = client.fetch_upload('tmp/'+f.filename, 1)
         shutil.rmtree('tmp/')
         # print('<p>'+str(res)+'</p>')
     return render_template('upload.html', output=res)
