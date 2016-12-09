@@ -11,12 +11,21 @@ def encode(timeseries, filename):
 
 def decode(json_object):
     with open(json_object, 'r') as infile:
-        d = json.load(infile)
-    return ts(d['times'], d['values'])
+        try:
+            d = json.load(infile)
+            return ts(d['times'], d['values'])
+    except json.JSONDecodeError:
+        print('Invalid JSON object received\n')
+        return None
 
 def sdecode(json_string):
-    d = json.loads(json_string)
-    return ts(d['times'], d['values'])
+    try:
+        d = json.loads(json_string)
+        return ts(d['times'], d['values'])
+    except json.JSONDecodeError:
+        print('Invalid JSON object received:\n'+str(json_str))
+        return None
+
 
 def sencode(json_object):
     d_str = ''

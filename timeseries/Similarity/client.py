@@ -19,7 +19,10 @@ def fetch_byindex(ts_, n):
 def fetch_upload(ts_, n):
     s = socket(AF_INET, SOCK_STREAM)
     # s.connect(('54.164.101.248', 80))
-    s.connect(('localhost', 15000))
+    try:
+        s.connect(('localhost', 15000))
+    except:
+        raise TSDBConnectionError('Client socket connection failed\n')        
     if n == 1:
         print("Checking the closest timeseries in the database to {}".format(ts_))
     else:
