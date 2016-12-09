@@ -29,6 +29,9 @@ def db_client(sock, client_addr):
             tss_to_return = find_most_similiar.find_most_similiar(ts_interest, int(n), vp, False)
         else:
             tss_to_return = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_interest, int(n), vp)
+
+        for t in tss_to_return:
+            t.append(pickle.load(open("GeneratedTimeseries/"+t[1], 'rb')).__json__())
         print(tss_to_return)
         sock.sendall(json.dumps(tss_to_return).encode())
     print('Client closed connection') 
