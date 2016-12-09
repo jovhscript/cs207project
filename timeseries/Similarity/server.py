@@ -32,6 +32,9 @@ def db_client(sock, client_addr):
 
         for t in tss_to_return:
             t.append(pickle.load(open("GeneratedTimeseries/"+t[1], 'rb')).__json__())
+
+        if js:
+            tss_to_return.insert(0, [0, 'itself', ts_interest.__json__()])
         print(tss_to_return)
         sock.sendall(json.dumps(tss_to_return).encode())
     print('Client closed connection') 
