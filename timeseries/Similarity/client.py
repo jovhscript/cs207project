@@ -22,7 +22,8 @@ def fetch_upload(ts_, n):
     try:
         s.connect(('localhost', 15000))
     except:
-        raise TSDBConnectionError('Client socket connection failed\n')        
+        pass
+        # raise TSDBConnectionError('Client socket connection failed\n')        
     if n == 1:
         print("Checking the closest timeseries in the database to {}".format(ts_))
     else:

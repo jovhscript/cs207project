@@ -14,9 +14,9 @@ def decode(json_object):
         try:
             d = json.load(infile)
             return ts(d['times'], d['values'])
-    except json.JSONDecodeError:
-        print('Invalid JSON object received\n')
-        return None
+        except json.JSONDecodeError:
+            print('Invalid JSON object received\n')
+            return None
 
 def sdecode(json_string):
     try:
