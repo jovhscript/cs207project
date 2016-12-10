@@ -29,6 +29,10 @@ def search_index():
 def meta():
     return render_template('meta.html')
 
+@application.route("/search_meta/id", methods=['GET'])
+def search_meta1():
+    return sencode('Timeseries0.json')
+
 @application.route("/search_upload")
 def upload():
     return render_template('upload.html')
