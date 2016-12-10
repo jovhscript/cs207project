@@ -2,11 +2,19 @@
 
 <html>
 	<title>META SEARCH</title>
-
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+	<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
 	<body>
-		<h1 style='color:blue'>Choose the index of the Timeseries !</h1>
+		<div style="display: inline-block">
+		<img style="float: left" src="{{ url_for('static',filename='img/harvard2.png') }}"/>
+			<h1 style="display: inline-block">CS207 Project: TimeSeries Analysis</h1><br>
+			<h4 style="display: inline-block">Team jovhscript: Jack Qian, Omar Abboud, Virgile Audi, & Heidi Chen</h2>
+		</div>
+		<center>
+		<h3>Choose the index of the Timeseries !</h1>
+		
 		<br>
-		<br>
-		<button><a href="/" id="homebutton">Back Home</a></button>
+		<button class="button"><a href="/" id="homebutton">Back Home</a></button>
+		</center>
     </body>
 </html>
