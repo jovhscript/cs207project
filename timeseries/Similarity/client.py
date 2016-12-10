@@ -17,7 +17,7 @@ def fetch_byindex(ts_, n):
     received = s.recv(65536).decode()
     if received == '[]':
         print ('Requested timeseries cannot be found in database, returning empty')
-    return received#json.loads(s.recv(65536).decode())
+    return json.loads(received)
 
 
 def fetch_upload(ts_, n):
