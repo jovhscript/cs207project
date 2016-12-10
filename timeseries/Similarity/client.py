@@ -16,6 +16,7 @@ def fetch_byindex(ts_, n):
     print("Request sent to server")
     return json.loads(s.recv(65536).decode())
 
+
 def fetch_upload(ts_, n):
     s = socket(AF_INET, SOCK_STREAM)
     # s.connect(('54.164.101.248', 80))

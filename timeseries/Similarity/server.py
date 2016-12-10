@@ -28,15 +28,22 @@ def db_client(sock, client_addr):
         print("ts: {}, n closest: {}".format(ts_interest, n))
         if js:
             tss_to_return = find_most_similiar.find_most_similiar(ts_interest, int(n), vp, False)
+            if tss_to_return == '{}'.encode():
+                print ('Requested timeseries cannot be found in database, returning empty')
+                return tss_to_return
         else:
             tss_to_return = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_interest, int(n), vp)
+            #import pdb;pdb.set_trace()
+            if len(tss_to_return) == 0:
+                print ('Requested timeseries cannot be found in database, returning empty')
+                sock.sendall(json.dumps([]).encode())#tss_to_return
 
         for t in tss_to_return:
             t.append(pickle.load(open("GeneratedTimeseries/"+t[1], 'rb')).__json__())
 
         if js:
             tss_to_return.insert(0, [0, 'itself', ts_interest.__json__()])
-        print(tss_to_return)
+
         sock.sendall(json.dumps(tss_to_return).encode())
     print('Client closed connection') 
     sock.close()
