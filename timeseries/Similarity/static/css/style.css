@@ -57,6 +57,23 @@ input[type=text] {
 	float: right;
 	
 }
+
+.area {
+  fill: none;
+}
+
+.line {
+  fill: none;
+  stroke: #1C9A3D;
+  stroke-width: 1.5px;
+}
+
+.firstline {
+  fill: none;
+  stroke: #404b76;
+  stroke-width: 1.5px;
+}
+
 #chart-area {
   float: left;
   width: 70%;
