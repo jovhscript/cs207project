@@ -12,7 +12,47 @@
 		</div>
 		<center>
 		<h3>Choose the index of the Timeseries !</h1>
-		
+	
+		<h1 style='color:blue'>Choose the index of the Timeseries !</h1>
+		REQUEST A PARTICULAR TIMESERIES
+		<br>
+		ID
+		<input type="text" size="5" name="Index" placeholder="Id">
+		Return TS
+		<input type="checkbox" value="ts">
+		<button><a href="javascript:void();" id="requestTS">Request</a></button>
+		<br>
+		OR
+		<br>
+		ADD A TIMESERIES TO THE DATABASE:
+		<form action="/search_upload/results" method="post" enctype = "multipart/form-data">
+  			<input type="file" name="ts">
+  			<input type="submit" value= "Upload">
+		</form>
+		<br>
+		OR
+		<br>
+		SEARCH BY FILTERING:
+		<br>
+		levels: A
+		<input type="checkbox" value="A">
+		B
+		<input type="checkbox" value="B">
+		C
+		<input type="checkbox" value="C">
+		D
+		<input type="checkbox" value="D">
+		E
+		<input type="checkbox" value="E">
+		F
+		<input type="checkbox" value="F">
+		<br>
+		Mean: <input type="text" size="5" name="m_min" placeholder="Min">
+		<input type="text" size="5" name="m_max" placeholder="Max">
+		<br>
+		Standard Deviation: <input type="text" size="5" name="std_min" placeholder="Min">
+		<input type="text" size="5" name="std_max" placeholder="Max">
+
 		<br>
 		<button class="button"><a href="/" id="homebutton">Back Home</a></button>
 		</center>
