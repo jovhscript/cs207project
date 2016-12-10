@@ -27,6 +27,9 @@ def random_ts(a):
 
 def stand(x, m, s):
     "standardize timeseries x by mean m and std deviation s"
+    if s == 0:
+        print ('Attempting to standardize a constant timeseries. Returning zeros.')
+        return x-m
     return (x-m)*(1/float(s))
 
 def ccor(ts1, ts2):
