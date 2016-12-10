@@ -19,7 +19,6 @@ def db_client(sock, client_addr):
         # print("msg", msg)
         if not msg:
             raise TSDBConnectionError('Server socket connection failed\n')        
-            break
         ts_interest, n, typ = msg.decode().split('|')
         if typ == 'json':
             ts_interest = sdecode(ts_interest)

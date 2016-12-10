@@ -30,6 +30,12 @@ class SimilarityTest(unittest.TestCase):
         
         standardized_values = distances.stand(t0,t0.mean(),t0.std()).values()
         assert (str(standardized_values) == str(np.array([-1.46385011,-0.87831007,-0.29277002,0.29277002,0.87831007,1.46385011]))) #check that standardized values are correct
+
+    def test_standardizeConstant(self):
+        t0 = ts(times=[0,1,2,4,5,6],values=[3,3, 3, 3, 3, 3])
+        standardized_values = distances.stand(t0,t0.mean(),t0.std()).values()
+        assert (str(standardized_values) == str(np.array([0.,0.,,0.,0.,0.]))) #check that standardize a series of constant return a series of zeros
+
         
     def test_ccor(self):
         t0 = ts(times=[0,1,2,3],values=[1,2,3,4])

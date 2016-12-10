@@ -4,6 +4,7 @@ import os.path
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 from series import ArrayTimeSeries as ts
+from tsdb_error import *
 
 def encode(timeseries, filename):
     with open(filename+'.json', 'w') as outfile:
@@ -15,16 +16,16 @@ def decode(json_object):
             d = json.load(infile)
             return ts(d['times'], d['values'])
         except json.JSONDecodeError:
-            print('Invalid JSON object received\n')
-            return None
+            raise TSDBInputError('Invalid JSON object received\n')
+            #return None
 
 def sdecode(json_string):
     try:
         d = json.loads(json_string)
         return ts(d['times'], d['values'])
     except json.JSONDecodeError:
-        print('Invalid JSON object received:\n'+str(json_str))
-        return None
+        raise TSDBInputError('Invalid JSON object received:\n'+str(json_str))
+        #return None
 
 
 def sencode(json_object):
