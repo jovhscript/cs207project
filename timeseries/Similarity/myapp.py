@@ -22,7 +22,7 @@ def search_index():
     n = request.args.get('n', 0, type=int)
     print(i,n)
     res = client.fetch_byindex('Timeseries'+str(i), n+1)
-    print(res)
+    print(type(res))
     return jsonify(result=res)
 
 @application.route("/search_meta/")
