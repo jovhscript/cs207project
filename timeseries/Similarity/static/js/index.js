@@ -5,36 +5,36 @@ var plot_data;
 
 $(function() {
   $('a#requestTS').bind('click', function() {
+	d3.select("#plotsvg").remove();
+	d3.select("#result_table").remove();
     $.getJSON("/search_index/results", {
       id: $('input[name="Index"]').val(),
       n: $('input[name="Number"]').val()
     }, function(data) {
 		var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>Distance</th><th></th></tr>"
-		for(i=0; i<data.result.length; i++){
+		for(i=1; i<data.result.length; i++){
 		    content += '<tr><td>' +  data.result[i][1] + '</td><td>' + data.result[i][0] + '</td><td><button onclick="">Plot</button></td></tr>';
 		}
 		content += "</table>"
-		cur_plot=+data.result[0][1].substr(data.result[0][1].length - 1);
-		console.log(data.result);
-		var times = data.result[0][2].times
-		var values = data.result[0][2].values
-		initPlot(times, values);
+		console.log(typeof data.result);
+		var times = data.result[0][2]['times'];
+		var values = data.result[0][2]['values'];
+		svg = initPlot(times, values);
       $("#tss").append(content);
-	  addRowHandlers();
+	  addRowHandlers(svg);
 	  plot_data = data.result;
     });
     return false;
   addRowHandlers();
   });
-  
 });
 
 i_array = []
 
-function addRowHandlers() {
+function addRowHandlers(svg) {
     var table = document.getElementById("result_table");
     var rows = table.getElementsByTagName("tr");
-    for (i = 2; i < rows.length; i++) {
+    for (i = 1; i < rows.length; i++) {
         var currentRow = table.rows[i];
         var createClickHandler = 
             function(row) 
@@ -44,7 +44,7 @@ function addRowHandlers() {
                                         var id = cell.innerHTML;
                                         i = id;
 										i_array.push(i)
-										LoadData();
+										LoadData(svg);
                                  };
             };
 
@@ -56,12 +56,6 @@ var margin = {top: 40, right: 40, bottom: 60, left: 60};
 
 var width = 670 - margin.left - margin.right,
 		height = 500 - margin.top - margin.bottom;
-
-var svg = d3.select("#chart-area").append("svg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
-		.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 		
 var x = d3.scale.linear()
 	.domain([0,.99])
@@ -75,18 +69,26 @@ var yAxis = d3.svg.axis()
 	.scale(y)
 	.orient("left");
 
-var yAxisGroup = svg.append("g")
-	.attr("class", "y-axis axis");
-
 var xAxis = d3.svg.axis()
 	.scale(x)
 	.orient("bottom");
 
-var xAxisGroup = svg.append("g")
-	.attr("transform", "translate(0," + height + ")")
-	.attr("class", "x-axis axis");
 				
 function initPlot(times, values){
+	
+	var svg = d3.select("#chart-area").append("svg")
+			.attr("id","plotsvg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			
+	var yAxisGroup = svg.append("g")
+		.attr("class", "y-axis axis");
+
+	var xAxisGroup = svg.append("g")
+		.attr("transform", "translate(0," + height + ")")
+		.attr("class", "x-axis axis");
 
 	svg.append("text")
 		.attr("text-anchor", "middle")
@@ -113,6 +115,7 @@ function initPlot(times, values){
 		.attr("class","firstline")
 		.attr("d",pathline(resultarray))
 		
+	return svg
 }
 
 function toObject(times, values) {
@@ -127,8 +130,10 @@ function toObject(times, values) {
 	return resultarray
 }
 
-function LoadData(){
-	
+$("#first").remove()
+
+function LoadData(svg){
+	console.log('hi')
 	result_arrays = []
 	i_array.forEach(function(i){
 		plot_data.forEach(function(d){
