@@ -10,7 +10,7 @@ application = Flask(__name__)
 def home():
     return render_template('home.html')
 
-@application.route("/search_index", methods=['GET', 'POST'])
+@application.route("/search_index/", methods=['GET', 'POST'])
 def indb():
     return render_template("index.html")
 
@@ -25,9 +25,13 @@ def search_index():
     print(res)
     return jsonify(result=res)
 
-@application.route("/search_meta")
+@application.route("/search_meta/")
 def meta():
     return render_template('meta.html')
+
+@application.route("/search_meta/id", methods=['GET'])
+def search_meta1():
+    return sencode('Timeseries0.json')
 
 @application.route("/search_upload")
 def upload():

@@ -82,19 +82,19 @@ class DataBase_tests(unittest.TestCase):
         n = 20
         ans = find_most_similiar(filename, n, vp)
         ans2 = sanity_check(filename,n)
-        assert ans == ans2
+        assert [x[1] for x in ans[1:]] == ans2[:19]
         
         filename = "GeneratedTimeseries/Timeseries932"
         n = 3
         ans = find_most_similiar(filename, n, vp)
         ans2 = sanity_check(filename,n)
-        assert ans == ans2     
+        assert [x[1] for x in ans[1:]]  == ans2[:2]    
         
         filename = "GeneratedTimeseries/Timeseries32"
         n = 5
         ans = find_most_similiar(filename, n, vp)
         ans2 = sanity_check(filename,n)
-        assert ans == ans2              
+        assert [x[1] for x in ans[1:]] == ans2[:4]              
                     
                               
                                   
