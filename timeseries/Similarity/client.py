@@ -14,7 +14,10 @@ def fetch_byindex(ts_, n):
         print("Checking the {} closest timeseries in the database to {}".format(n, ts_))
     s.send("{}|{}|ind".format(ts_, str(n)).encode())
     print("Request sent to server")
-    return json.loads(s.recv(65536).decode())
+    received = s.recv(65536).decode()
+    if received == '[]':
+        print ('Requested timeseries cannot be found in database, returning empty')
+    return received#json.loads(s.recv(65536).decode())
 
 
 def fetch_upload(ts_, n):
