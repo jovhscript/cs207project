@@ -3,7 +3,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from concurrent.futures import ThreadPoolExecutor
 from tstojson import *
 import argparse
-
+from tsdb_error import *
 def fetch_byindex(ts_, n):
     s = socket(AF_INET, SOCK_STREAM)
     # s.connect(('54.164.101.248', 80))
@@ -22,8 +22,7 @@ def fetch_upload(ts_, n):
     try:
         s.connect(('localhost', 15000))
     except:
-        pass
-        # raise TSDBConnectionError('Client socket connection failed\n')        
+        raise TSDBConnectionError('Client socket connection failed\n')        
     if n == 1:
         print("Checking the closest timeseries in the database to {}".format(ts_))
     else:

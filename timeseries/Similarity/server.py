@@ -5,6 +5,7 @@ import threading
 from BinarySearchDatabase import *
 import find_most_similiar
 from tstojson import *
+from tsdb_error import *
 with open('VantagePointDatabases/vp') as f:
     vp = []
     for line in f:
@@ -17,6 +18,7 @@ def db_client(sock, client_addr):
         msg = sock.recv(65536)
         # print("msg", msg)
         if not msg:
+            raise TSDBConnectionError('Server socket connection failed\n')        
             break
         ts_interest, n, typ = msg.decode().split('|')
         if typ == 'json':
