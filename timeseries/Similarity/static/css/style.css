@@ -47,12 +47,12 @@ input[type=text] {
     background-color:#dcfac9
 }
 
-#resultpane {
+.resultpane {
 	width: 50%;
 	float: left;
 }
 
-#chartpane {
+.chartpane {
 	width: 50%;
 	float: right;
 	
@@ -79,12 +79,12 @@ input[type=text] {
   width: 70%;
 }
 
-#file {
+.file {
 	height: 25px;
 	border: 0px;
 	
 }
-#upload {
+.upload {
 	background-color: steelblue;
 	color: white;
 	width: 8%;
