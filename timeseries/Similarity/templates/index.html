@@ -25,8 +25,8 @@
 		<center>
 		<h3>Search TimeSeries by Index</h3>
 		
-		<p>
-		Please enter the index of the timeseries you which to study, as well as the number of closest results:
+		<p style="width: 50%">
+		Please enter the index of the timeseries you which to study, as well as the number of closest results. The chart on the right will display the original time series, and upon clicking rows in the result table, the according time series will appear in green. The chart can be reset at any time by clicking the "Reset Chart" button:
 		</p>
 		
 		<br>
@@ -46,7 +46,7 @@
 		<div id="chartpane">
 			<center>
 			<p class="areatitle">Chart Area</p>
-			
+			<button class="button" style="color: steelblue" onclick="reset_chart()">Reset Chart</button>
 			</center>
 			<div id="chart-area"></div>
 		</div>

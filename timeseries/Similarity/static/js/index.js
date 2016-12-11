@@ -3,6 +3,8 @@
 var cur_plot = 0;
 var plot_data;
 
+var times, values;
+
 $(function() {
   $('a#requestTS').bind('click', function() {
 	d3.select("#plotsvg").remove();
@@ -17,8 +19,8 @@ $(function() {
 		}
 		content += "</table>"
 		console.log(typeof data.result);
-		var times = data.result[0][2]['times'];
-		var values = data.result[0][2]['values'];
+		times = data.result[0][2]['times'];
+		values = data.result[0][2]['values'];
 		svg = initPlot(times, values);
       $("#tss").append(content);
 	  addRowHandlers(svg);
@@ -31,7 +33,14 @@ $(function() {
 
 i_array = []
 
+function reset_chart() {
+	d3.select("#plotsvg").remove();
+	svg = initPlot(times, values);
+	addRowHandlers(svg);
+}
+
 function addRowHandlers(svg) {
+	i_array = []
     var table = document.getElementById("result_table");
     var rows = table.getElementsByTagName("tr");
     for (i = 1; i < rows.length; i++) {
@@ -143,9 +152,9 @@ function LoadData(svg){
 	i_array.forEach(function(i){
 		plot_data.forEach(function(d){
 			if(d[1] == i){
-				values = d[2].values
-				times = d[2].times
-				resultarray = toObject(times, values);
+				values2 = d[2].values
+				times2 = d[2].times
+				resultarray = toObject(times2, values2);
 				result_arrays.push(resultarray)
 			}
 		})	
