@@ -92,7 +92,12 @@ function initPlot(times, values){
 
 	svg.append("text")
 		.attr("text-anchor", "middle")
-		.attr("transform", "translate(390,435)")
+		.attr("transform", "translate(-35,220)rotate(-90)")
+		.text("TS Value");
+		
+	svg.append("text")
+		.attr("text-anchor", "middle")
+		.attr("transform", "translate(280,435)")
 		.text("Time");
 
 	var xlabel = svg.append("text");	
