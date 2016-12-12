@@ -1,5 +1,3 @@
-
-
 var cur_plot = 0;
 var plot_data;
 
@@ -17,7 +15,6 @@ $(function() {
       n: $('input[name="Number"]').val()
     },
     success: function(data) {
-    	console.log('---',data)
 		var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>Distance</th><th></th></tr>"
 		for(i=1; i<data.result.length; i++){
 		    content += '<tr><td>' +  data.result[i][1] + '</td><td>' + data.result[i][0] + '</td><td><button onclick="">Plot</button></td></tr>';
@@ -40,6 +37,60 @@ $(function() {
   addRowHandlers();
   });
 });
+
+$(function() {
+    $('#submit_upload').click(function() {
+        event.preventDefault();
+        var form_data = new FormData($('#uploadts')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/simsearch/',
+            data: form_data,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+			var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>Distance</th><th></th></tr>"
+		for(i=1; i<data.result.length; i++){
+		    content += '<tr><td>' +  data.result[i][1] + '</td><td>' + data.result[i][0] + '</td><td><button onclick="">Plot</button></td></tr>';
+		}
+		content += "</table>"
+		console.log(typeof data.result);
+		times = data.result[0][2]['times'];
+		values = data.result[0][2]['values'];
+		svg = initPlot(times, values);
+      $("#tss").append(content);
+	  addRowHandlers(svg);
+	  plot_data = data.result;
+    },
+    error: function(xhr, status, error){
+    	var response = $.parseJSON(xhr.responseText);
+    	$("#tss").append(response.message);
+    }
+	});
+    return false;
+  addRowHandlers();
+        });
+}); 
+
+// $("form#data").submit(function(){
+
+//     var formData = new FormData(this);
+//     console.log(formData)
+//     $.ajax({
+//         url: '/simsearch/',
+//         type: 'POST',
+//         data: formData,
+//         async: false,
+//         success: function (data) {
+//             alert(data)
+//         },
+//         cache: false,
+//         contentType: false,
+//         processData: false
+//     });
+
+//     return false;
+// });
 
 i_array = []
 
