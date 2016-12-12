@@ -14,11 +14,20 @@ def fetch_byindex(ts_, n):
         print("Checking the {} closest timeseries in the database to {}".format(n, ts_))
     s.send("{}|{}|ind".format(ts_, str(n)).encode())
     print("Request sent to server")
-    received = s.recv(65536).decode()
-    if received == '[]':
-        print ('Requested timeseries cannot be found in database, returning empty')
-    return json.loads(received)
-
+    try:
+        received = s.recv(9)
+        length = int.from_bytes(received[:8], byteorder='little')
+        kind = received[8:9].decode('utf-8')
+        #byte only if slicing (int otherwise)
+        toget = s.recv(length).decode('utf-8')
+    except:
+        return 'SHIT HAPPENED'
+    if kind == 'E':
+        return toget
+    elif kind == 'J':
+        return json.loads(toget)
+    else:
+        return 'SHIT HAPPENED'
 
 def fetch_upload(ts_, n):
     s = socket(AF_INET, SOCK_STREAM)
@@ -34,7 +43,20 @@ def fetch_upload(ts_, n):
     ts_ = sencode(ts_)
     s.send("{}|{}|json".format(ts_, str(n)).encode())
     print("Request sent to server")
-    return json.loads(s.recv(65536).decode())
+    try:
+        received = s.recv(9)
+        length = int.from_bytes(received[:8], byteorder='little')
+        kind = received[8:9].decode('utf-8')
+        #byte only if slicing (int otherwise)
+        toget = s.recv(length).decode('utf-8')
+    except:
+        return 'SHIT HAPPENED (ASK RAHUL FOR THE JOKE)'
+    if kind == 'E':
+        return toget
+    elif kind == 'J':
+        return json.loads(toget)
+    else:
+        return 'SHIT HAPPENED (ASK RAHUL FOR THE JOKE)'
 
 def main(arguments):
     parser = argparse.ArgumentParser(description='Finding the n most similar timeseries')

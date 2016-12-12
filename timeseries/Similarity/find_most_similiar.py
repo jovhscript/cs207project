@@ -150,7 +150,7 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'bstree'):
                 ts1 = pickle.load(f)
         except:
             print ('Requested %s cannot be found in database, returning empty'%filename)
-            return []
+            return 'ERROR INDEX'
     else:
         ts1 = filename
 
@@ -171,7 +171,9 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'bstree'):
 
         dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
         vantage_pts_dist.append([dist,i])
-        
+    if n>len(vantage_pts_dist) or n<1:
+        print('More neighbours than vantage requested.')
+        return 'ERROR NUMBER | {}'.format(len(vantage_pts_dist))
     vantage_pts_dist.sort(key=lambda x: x[0])
     
     all_pts_to_check = []

@@ -17,6 +17,26 @@ application = Flask(__name__)
 #application.config['SQLALCHEMY_DATABASE_URI'] = url
 #db = SQLAlchemy(application)
 
+class InvalidUsage(Exception):
+    status_code = 400
+
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['message'] = self.message
+        return rv
+
+@application.errorhandler(InvalidUsage)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 @application.route("/")
 def home():
@@ -30,24 +50,23 @@ def indb():
 def search_index():
     if request.method == 'GET':
         i = request.args.get('id', 0, type=int)
-        if i >= 1000:
-            return jsonify(result='Invalid Index. Try again.')
         n = request.args.get('n', 0, type=int)
-        if n<=0 or n>=1000:
-            return jsonify(result='Invalid Number of Timeseries Requested. Try again.')
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
+        print(res)
     elif request.method == 'POST':
         f=request.files['ts']
         n=int(request.values['Number'])
         if f.filename[-4:] != 'json':
-            return jsonify(result='Wrong file type. Try again with Json.')
-        os.mkdir('tmp/')
+            raise InvalidUsage('Invalid File Type Supplied', status_code=400)
+        try:
+            shutil.rmtree('tmp/')
+        except:
+            os.mkdir('tmp/')
         f.save('tmp/'+f.filename)
-        if n<=0 or n>=1000:
-            return jsonify(result='Invalid Number of Timeseries Requested. Try again.')
         res = client.fetch_upload('tmp/'+f.filename, n)
         shutil.rmtree('tmp/')
-        # print('<p>'+str(res)+'</p>')
+    if 'ERROR' in res:
+        raise InvalidUsage(res, status_code=400)
     return jsonify(result=res)
 
 @application.route("/search_meta/")

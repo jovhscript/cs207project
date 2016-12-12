@@ -6,6 +6,7 @@ from BinarySearchDatabase import *
 import find_most_similiar
 from tstojson import *
 from tsdb_error import *
+
 with open('VantagePointDatabases/vp') as f:
     vp = []
     for line in f:
@@ -28,15 +29,19 @@ def db_client(sock, client_addr):
         print("ts: {}, n closest: {}".format(ts_interest, n))
         if js:
             tss_to_return = find_most_similiar.find_most_similiar(ts_interest, int(n), vp, False)
-            if tss_to_return == '{}'.encode():
-                print ('Requested timeseries cannot be found in database, returning empty')
-                return tss_to_return
         else:
             tss_to_return = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_interest, int(n), vp)
             #import pdb;pdb.set_trace()
-            if len(tss_to_return) == 0:
-                print ('Requested timeseries cannot be found in database, returning empty')
-                sock.sendall(json.dumps([]).encode())#tss_to_return
+        
+        if isinstance(tss_to_return, str):
+            print ('Error', tss_to_return)
+            if 'INDEX' in tss_to_return:
+                error = 'ERROR 400: NO SUCH INDEX IN DATABASE'.encode('utf-8')
+            elif 'NUMBER' in tss_to_return:
+                error = 'ERROR 400: N should be between 1 and {}'.format(tss_to_return.split(' | ')[1]).encode('utf-8')
+            tosend = (len(error)).to_bytes(8, byteorder='little')+'E'.encode('utf-8')+error
+            sock.sendall(tosend)
+            sock.close()
 
         for t in tss_to_return:
             t.append(pickle.load(open("GeneratedTimeseries/"+t[1], 'rb')).__json__())
@@ -44,7 +49,9 @@ def db_client(sock, client_addr):
         if js:
             tss_to_return.insert(0, [0, 'itself', ts_interest.__json__()])
 
-        sock.sendall(json.dumps(tss_to_return).encode())
+        jsonencoded = json.dumps(tss_to_return).encode('utf-8')
+        tosend = (len(jsonencoded)).to_bytes(8, byteorder='little')+'J'.encode('utf-8')+jsonencoded
+        sock.sendall(tosend)
     print('Client closed connection') 
     sock.close()
 
@@ -64,5 +71,6 @@ def db_server(addr):
 def launch():
     db_server(('', 15000))
 
-launch()
+if __name__ == '__main__':
+    launch()
 
