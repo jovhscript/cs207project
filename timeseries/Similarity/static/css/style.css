@@ -58,6 +58,12 @@ input[type=text] {
 	
 }
 
+#error {
+	color: red;
+	font-size: 18px;
+	font-weight: bold;
+}
+
 .area {
   fill: none;
 }

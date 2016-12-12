@@ -4,6 +4,7 @@
   	<head>
 		
     	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="http://malsup.github.com/jquery.form.js"></script> 
     	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
 		<link rel="stylesheet" type= "text/css" href = "//cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
 		<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
@@ -41,10 +42,10 @@
 			<p style="width: 50%">
 			Please upload a TimeSeries file to return closest search results:
 			</p>
-			<form action="/simsearch/" method="post" enctype = "multipart/form-data">
+			<form action="/simsearch/" method="post" id="form2" enctype = "multipart/form-data">
 	  			<input style="display: inline-block" class="file" type="file" name="ts">
 				<input type="text" size="5" name="Number" placeholder="Number of Results">
-	  			<input style="display: inline-block" class="upload" type="submit" value= "Upload">
+				<input onclick="formSubmit(this)"style="display: inline-block" id="requestUpload" class="upload" type="submit" value= "Upload">
 			</form>
 		</center>
 		<br>
@@ -52,6 +53,7 @@
 			<center>
 			<p class="areatitle">Results</p>
 			<span id="tss"></span>
+			<span id="error"></span>
 			</center>
 		</div>
 		<div class="chartpane">
