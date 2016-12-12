@@ -41,6 +41,8 @@ $(function() {
 
 $(function() {
     $('#submit_upload').click(function() {
+		d3.select("#plotsvg").remove();
+		d3.select("#result_table").remove();
         event.preventDefault();
         var form_data = new FormData($('#uploadts')[0]);
         $.ajax({
@@ -65,33 +67,13 @@ $(function() {
     },
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
-    	$("#tss").append(response.message);
+    	$("#error").text(response.message);
     }
 	});
     return false;
-  addRowHandlers();
+  	addRowHandlers();
         });
 }); 
-
-// $("form#data").submit(function(){
-
-//     var formData = new FormData(this);
-//     console.log(formData)
-//     $.ajax({
-//         url: '/simsearch/',
-//         type: 'POST',
-//         data: formData,
-//         async: false,
-//         success: function (data) {
-//             alert(data)
-//         },
-//         cache: false,
-//         contentType: false,
-//         processData: false
-//     });
-
-//     return false;
-// });
 
 i_array = []
 
@@ -259,31 +241,5 @@ function LoadData(svg){
 	circle.exit().transition().duration(800).remove();*/
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
