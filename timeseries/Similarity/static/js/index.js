@@ -9,7 +9,7 @@ $(function() {
   $('a#requestTS').bind('click', function() {
 	d3.select("#plotsvg").remove();
 	d3.select("#result_table").remove();
-    $.getJSON("/search_index/results", {
+    $.getJSON("/simsearch/", {
       id: $('input[name="Index"]').val(),
       n: $('input[name="Number"]').val()
     }, function(data) {

@@ -22,19 +22,26 @@ application = Flask(__name__)
 def home():
     return render_template('home.html')
 
-@application.route("/search_index/", methods=['GET', 'POST'])
+@application.route("/simsearch", methods=['GET', 'POST'])
 def indb():
     return render_template("index.html")
 
-@application.route("/search_index/results")
+@application.route("/simsearch/", methods=['GET', 'POST'])
 def search_index():
-    i = request.args.get('id', 0, type=int)
-    if i >= 1000:
-        return jsonify(result='Invalid Index. Try again.')
-    n = request.args.get('n', 0, type=int)
-    print(i,n)
-    res = client.fetch_byindex('Timeseries'+str(i), n+1)
-    print(type(res))
+    if request.method == 'GET':
+        i = request.args.get('id', 0, type=int)
+        if i >= 1000:
+            return jsonify(result='Invalid Index. Try again.')
+        n = request.args.get('n', 0, type=int)
+        res = client.fetch_byindex('Timeseries'+str(i), n+1)
+    elif request.method == 'POST':
+        f=request.files['ts']
+        print(request)
+        os.mkdir('tmp/')
+        f.save('tmp/'+f.filename)
+        res = client.fetch_upload('tmp/'+f.filename, 1)
+        shutil.rmtree('tmp/')
+        # print('<p>'+str(res)+'</p>')
     return jsonify(result=res)
 
 @application.route("/search_meta/")
