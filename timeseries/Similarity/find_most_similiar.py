@@ -114,6 +114,21 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype 
         distance.append([dist,"Timeseries"+str(l)]) 
     return distance
 
+def interpolate_to_match_input(ts_database, ts_input):
+    """
+    interpolate the generated timeseries in the database to match the timeseries
+    input from the client
+    
+    Parameter
+    ----------------
+    ts_input: timeseries input by the client
+    ts_database: the timeseries generated in the database
+    """
+    ts_input_times = ts_input.times()
+    ts_database_times = ts_database.times()
+    interpolated_values = ts_database.interpolate(ts_input_times)
+    interpolated_ts = ts(ts_input_times, interpolated_values)
+    return interpolated_ts
 
 def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'bstree'):
     """
@@ -128,7 +143,6 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'bstree'):
     """
     
     file_names = []
-    
     #load the given file
     if isfile:
         try:
@@ -139,12 +153,21 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'bstree'):
             return []
     else:
         ts1 = filename
+
+    ## check data type
+    if not isinstance(ts1, ts):
+        print ('Requested %s is not a TimeSeries instance, returning empty'%filename)
+        return []
        
     #find the most similiar vantage point = d 
     vantage_pts_dist = []
     for i in vantage_pts:
         with open("GeneratedTimeseries/Timeseries"+str(i), "rb") as f:
             ts2 = pickle.load(f)
+
+        ## interpolate the timeseries in the database to have the same times
+        ## as the client input timeseries
+        ts2 = interpolate_to_match_input(ts2, ts1)
 
         dist = distances.distance(distances.stand(ts1,ts1.mean(),ts1.std()), distances.stand(ts2,ts2.mean(),ts2.std()), mult=1)
         vantage_pts_dist.append([dist,i])
