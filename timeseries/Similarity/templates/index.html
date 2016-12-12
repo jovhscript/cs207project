@@ -41,10 +41,14 @@
 			<p style="width: 50%">
 			Please upload a TimeSeries file to return closest search results:
 			</p>
-			<form action="/simsearch/" method="post" enctype = "multipart/form-data">
+  			<input style="display: inline-block" class="file" type="file" name="ts">
+			<input type="text" size="5" name="Number" placeholder="Number of Results">
+			<button class="button"><a id="requestUpload">Request</a></button>
+			<!--<form action="/simsearch/" method="post" enctype = "multipart/form-data">
 	  			<input style="display: inline-block" class="file" type="file" name="ts">
 				<input type="text" size="5" name="Number" placeholder="Number of Results">
-	  			<input style="display: inline-block" class="upload" type="submit" value= "Upload">
+				<button class="button"><a id="requestUpload">Request</a></button>
+	  			<!---<input style="display: inline-block" class="upload" type="submit" value= "Upload">-->
 			</form>
 		</center>
 		<br>

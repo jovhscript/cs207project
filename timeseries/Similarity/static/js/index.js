@@ -27,9 +27,24 @@ $(function() {
 	  plot_data = data.result;
     });
     return false;
-  addRowHandlers();
+ 
   });
 });
+
+$(function() {
+	$('a#requestUpload').bind("click",function() {
+		$.ajax({
+			type:"POST",
+			url : "/simsearch/",
+			data:{ } , // do I need to pass data if im GET ting?
+			dataType: 'json',
+			success : function(data){
+				console.log(data);
+			}
+		});//end ajax   
+	});//end click
+});//end rdy
+
 
 i_array = []
 
