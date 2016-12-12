@@ -33,12 +33,19 @@ def search_index():
         if i >= 1000:
             return jsonify(result='Invalid Index. Try again.')
         n = request.args.get('n', 0, type=int)
+        if n<=0 or n>=1000:
+            return jsonify(result='Invalid Number of Timeseries Requested. Try again.')
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
     elif request.method == 'POST':
         f=request.files['ts']
+        n=int(request.values['Number'])
+        if f.filename[-4:] != 'json':
+            return jsonify(result='Wrong file type. Try again with Json.')
         os.mkdir('tmp/')
         f.save('tmp/'+f.filename)
-        res = client.fetch_upload('tmp/'+f.filename, int(request.values['Number']))
+        if n<=0 or n>=1000:
+            return jsonify(result='Invalid Number of Timeseries Requested. Try again.')
+        res = client.fetch_upload('tmp/'+f.filename, n)
         shutil.rmtree('tmp/')
         # print('<p>'+str(res)+'</p>')
     return jsonify(result=res)
@@ -50,7 +57,7 @@ def meta():
 @application.route("/search_meta/id", methods=['GET'])
 def search_meta1():
     return sencode('Timeseries0.json')
-    
+
     # return render_template('upload.html', output=res)
 if __name__ == "__main__":
     application.run(host='0.0.0.0', debug=True)
