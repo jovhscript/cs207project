@@ -1,38 +1,56 @@
 <!DOCTYPE html>
 
 <html>
-  <head>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
-          rel="stylesheet">
-  <script type=text/javascript>
-    $(function() {
-      $('a#requestTS').bind('click', function() {
-        $.getJSON("/search_index/results", {
-          id: $('input[name="Index"]').val(),
-          n: $('input[name="Number"]').val()
-        }, function(data) {
-          $("#tss").text(data.result);
-        });
-        return false;
-      });
-    });
-  </script>
+  	<head>
+		
+    	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" type= "text/css" href = "//cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
+		<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
+  		<script type=text/javascript charset="utf8" src="//cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+		<script type=text/javascript  src="{{ url_for('static',filename='js/d3.min.js') }}"></script>
+		<script type=text/javascript  src="{{ url_for('static',filename='js/d3.legend.js') }}"></script>
+		 <script type=text/javascript  src="{{ url_for('static',filename='js/d3.tip.js') }}"></script>
+
 	<title>Index Search</title>
-</head>
+	
+	</head>
+
 	<body>
-		<h1 style='color:blue'>Search by index !</h1>
-		<p>
-		Please enter the index of the timeseries you which to study:
-		<br>
-		<input type="text" size="5" name="Index">
-		<input type="text" size="5" name="Number">
-		<button><a href="javascript:void();" id="requestTS">Request</a></button>
-		<br>
-		<span id="tss">Results</span>
+		<div style="display: inline-block">
+		<img style="float: left" src="{{ url_for('static',filename='img/harvard2.png') }}"/>
+			<h1 style="display: inline-block">CS207 Project: TimeSeries Analysis</h1><br>
+			<h4 style="display: inline-block">Team jovhscript: Jack Qian, Omar Abboud, Virgile Audi, & Heidi Chen</h2>
+		</div>
+		<center>
+		<h3>Search TimeSeries by Index</h3>
+		
+		<p style="width: 50%">
+		Please enter the index of the timeseries you which to study, as well as the number of closest results. The chart on the right will display the original time series, and upon clicking rows in the result table, the according time series will appear in green. The chart can be reset at any time by clicking the "Reset Chart" button:
 		</p>
+		
+		<br>
+		<input type="text" size="5" name="Index" placeholder="Index">
+		<input type="text" size="5" name="Number" placeholder="Number of Results">
+		<button class="button"><a href="javascript:void();" id="requestTS">Request</a></button>
+		<button class="button"><a href="/" id="homebutton">Back Home</a></button>
+		</center>
 		<br>
 		<br>
-		<button><a href="/" id="homebutton">Back Home</a></button>
+		<div class="resultpane">
+			<center>
+			<p class="areatitle">Results</p>
+			<span id="tss"></span>
+			</center>
+		</div>
+		<div class="chartpane">
+			<center>
+			<p class="areatitle">Chart Area</p>
+			<button class="button" style="color: steelblue" onclick="reset_chart()">Reset Chart</button>
+			</center>
+			<div id="chart-area"></div>
+		</div>
+		
     </body>
+			<script type=text/javascript src= "{{ url_for('static',filename='js/index.js') }}"></script>
 </html>
