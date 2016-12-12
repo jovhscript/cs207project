@@ -36,10 +36,9 @@ def search_index():
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
     elif request.method == 'POST':
         f=request.files['ts']
-        print(request)
         os.mkdir('tmp/')
         f.save('tmp/'+f.filename)
-        res = client.fetch_upload('tmp/'+f.filename, 1)
+        res = client.fetch_upload('tmp/'+f.filename, int(request.values['Number']))
         shutil.rmtree('tmp/')
         # print('<p>'+str(res)+'</p>')
     return jsonify(result=res)
@@ -51,20 +50,7 @@ def meta():
 @application.route("/search_meta/id", methods=['GET'])
 def search_meta1():
     return sencode('Timeseries0.json')
-
-@application.route("/search_upload")
-def upload():
-    return render_template('upload.html')
-
-@application.route("/search_upload/results", methods=['GET', 'POST'])
-def search_upload():
-    if request.method == 'POST':
-        f=request.files['ts']
-        os.mkdir('tmp/')
-        f.save('tmp/'+f.filename)
-        res = client.fetch_upload('tmp/'+f.filename, 1)
-        shutil.rmtree('tmp/')
-        # print('<p>'+str(res)+'</p>')
-    return render_template('upload.html', output=res)
+    
+    # return render_template('upload.html', output=res)
 if __name__ == "__main__":
     application.run(host='0.0.0.0', debug=True)
