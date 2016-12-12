@@ -1,5 +1,3 @@
-
-
 var cur_plot = 0;
 var plot_data;
 
@@ -17,7 +15,6 @@ $(function() {
       n: $('input[name="Number"]').val()
     },
     success: function(data) {
-    	console.log('---',data)
 		var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>Distance</th><th></th></tr>"
 		for(i=1; i<data.result.length; i++){
 		    content += '<tr><td>' +  data.result[i][1] + '</td><td>' + data.result[i][0] + '</td><td><button onclick="">Plot</button></td></tr>';
@@ -41,115 +38,60 @@ $(function() {
   });
 });
 
-// METHOD 1
 
-function submitForm() {
-            console.log("submit event");
-            //var fd = new FormData(document.getElementById("fileinfo"));
-            //fd.append("label", "WEBUPLOAD");
-            $.ajax({
-              url: "/simsearch/",
-              type: "POST",
-              data: {
-      		  	ts: $('input[name="ts"]').val(),
-      			Number: $('input[name="Number"]').val()
-    		  },
-			success: function( data ) {
-                console.log( data );
-            },
-			error: function(xhr, status, error){
-    				var response = $.parseJSON(xhr.responseText);
-    				$("#error").text(response.message);
-    			}
-			});
-            return false;
-        }
-		
-// METHOD 2
-		
-$("#form22").submit(function (event) {
-    event.preventDefault();
-    //grab all form data  
-
- $.ajax({
-        url: 'addProduct.php',
-        type: 'POST',
-        data: {
-      		  	ts: $('input[name="ts"]').val(),
-      			Number: $('input[name="Number"]').val()
-    		  },
-        async: false,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function (returndata) {
-        console.log(returndata)
-        },
-        error: function(xhr, status, error){
-    				var response = $.parseJSON(xhr.responseText);
-    				$("#error").text(response.message);
-    			}
-    	});
-
-    return false;
-    });
-	
-// METHOD 3
-			
 $(function() {
-  $('a#requestUpload').bind('click', function() {
-	d3.select("#plotsvg").remove();
-	d3.select("#result_table").remove();
-    $.ajax({
-	type: 'POST',
-	url: '/simsearch/',
-	data: {
-      ts: $('input[name="ts"]').val(),
-      Number: $('input[name="Number"]').val()
-    },
-    success: function(data) {
-    	console.log('---',data)
-		//var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>Distance</th><th></th></tr>"
-		//for(i=1; i<data.result.length; i++){
-		//   content += '<tr><td>' +  data.result[i][1] + '</td><td>' + data.result[i][0] + '</td><td><button onclick="">Plot</button></td></tr>';
-		//}
-		// content += "</table>"
-// 		console.log(typeof data.result);
-// 		times = data.result[0][2]['times'];
-// 		values = data.result[0][2]['values'];
-// 		svg = initPlot(times, values);
-//       $("#tss").append(content);
-// 	  addRowHandlers(svg);
-// 	  plot_data = data.result;
+    $('#submit_upload').click(function() {
+        event.preventDefault();
+        var form_data = new FormData($('#uploadts')[0]);
+        $.ajax({
+            type: 'POST',
+            url: '/simsearch/',
+            data: form_data,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+			var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>Distance</th><th></th></tr>"
+		for(i=1; i<data.result.length; i++){
+		    content += '<tr><td>' +  data.result[i][1] + '</td><td>' + data.result[i][0] + '</td><td><button onclick="">Plot</button></td></tr>';
+		}
+		content += "</table>"
+		console.log(typeof data.result);
+		times = data.result[0][2]['times'];
+		values = data.result[0][2]['values'];
+		svg = initPlot(times, values);
+      $("#tss").append(content);
+	  addRowHandlers(svg);
+	  plot_data = data.result;
     },
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
-    	$("#error").text(response.message);
+    	$("#tss").append(response.message);
     }
 	});
     return false;
-  //addRowHandlers();
-  });
-});
+  addRowHandlers();
+        });
+}); 
 
-// Method 4
+// $("form#data").submit(function(){
 
+//     var formData = new FormData(this);
+//     console.log(formData)
+//     $.ajax({
+//         url: '/simsearch/',
+//         type: 'POST',
+//         data: formData,
+//         async: false,
+//         success: function (data) {
+//             alert(data)
+//         },
+//         cache: false,
+//         contentType: false,
+//         processData: false
+//     });
 
-
-$("#form22").submit(function (e) {
-  e.preventDefault();
-  $(this).ajaxSubmit()
-  .success(function (data) {
-    var x = JSON.parse(data);
-    alert("Success : " + x);
-  }).fail(function (data) {
-    var x = JSON.parse(data);
-    alert("Error : " + x);
-  });
-});
-
-// Method 5
-
+//     return false;
+// });
 
 i_array = []
 
@@ -317,37 +259,6 @@ function LoadData(svg){
 	circle.exit().transition().duration(800).remove();*/
 
 }
-
-function formSubmit(inputB) {
-    alert('click does not work');
-    var formulario = inputB.form;
-    var test = $('#form2');
-
-    //debugger;
-    $('#form2').ajaxSubmit({
-        dataType: 'json',
-        success: processJson
-    });
-    return false;
-}
-
-function processJson(data) {
-    //debugger;
-    console.log("response: " + data);
-}
-
-$('#form2').ajaxForm({
-	type: 'POST',
-	url: '/simsearch/',
-    dataType: 'json',
-    data: {
-  	ts: $('input[name="ts"]').val(),
-	Number: $('input[name="Number"]').val()
-  	},
-    success: processJson
-});
-
-
 
 
 

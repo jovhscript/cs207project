@@ -54,8 +54,10 @@ def search_index():
         n = request.args.get('n', 0, type=int)
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
     elif request.method == 'POST':
+        # print(request.form.getlist('ts'))
         f=request.files['ts']
         n=int(request.values['Number'])
+        print(f, n)
         if f.filename[-4:] != 'json':
             raise InvalidUsage('Invalid File Type Supplied', status_code=400)
         try:
@@ -65,6 +67,7 @@ def search_index():
         f.save('tmp/'+f.filename)
         res = client.fetch_upload('tmp/'+f.filename, n)
         shutil.rmtree('tmp/')
+        print(res)
     if 'ERROR' in res:
         raise InvalidUsage(res, status_code=400)
     return jsonify(result=res)
