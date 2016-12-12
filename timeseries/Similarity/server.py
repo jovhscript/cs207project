@@ -26,7 +26,7 @@ def db_client(sock, client_addr):
             js = True
         else:
             js = False
-        print("ts: {}, n closest: {}".format(ts_interest, n))
+        # print("ts: {}, n closest: {}".format(ts_interest, n))
         if js:
             tss_to_return = find_most_similiar.find_most_similiar(ts_interest, int(n), vp, False)
         else:

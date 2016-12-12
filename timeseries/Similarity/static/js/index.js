@@ -9,10 +9,15 @@ $(function() {
   $('a#requestTS').bind('click', function() {
 	d3.select("#plotsvg").remove();
 	d3.select("#result_table").remove();
-    $.getJSON("/simsearch/", {
+    $.ajax({
+	type: 'GET',
+	url: '/simsearch/',
+	data: {
       id: $('input[name="Index"]').val(),
       n: $('input[name="Number"]').val()
-    }, function(data) {
+    },
+    success: function(data) {
+    	console.log('---',data)
 		var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>Distance</th><th></th></tr>"
 		for(i=1; i<data.result.length; i++){
 		    content += '<tr><td>' +  data.result[i][1] + '</td><td>' + data.result[i][0] + '</td><td><button onclick="">Plot</button></td></tr>';
@@ -25,26 +30,16 @@ $(function() {
       $("#tss").append(content);
 	  addRowHandlers(svg);
 	  plot_data = data.result;
-    });
+    },
+    error: function(xhr, status, error){
+    	var response = $.parseJSON(xhr.responseText);
+    	$("#tss").append(response.message);
+    }
+	});
     return false;
- 
+  addRowHandlers();
   });
 });
-
-$(function() {
-	$('a#requestUpload').bind("click",function() {
-		$.ajax({
-			type:"POST",
-			url : "/simsearch/",
-			data:{ } , // do I need to pass data if im GET ting?
-			dataType: 'json',
-			success : function(data){
-				console.log(data);
-			}
-		});//end ajax   
-	});//end click
-});//end rdy
-
 
 i_array = []
 

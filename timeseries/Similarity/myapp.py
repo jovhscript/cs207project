@@ -36,6 +36,7 @@ class InvalidUsage(Exception):
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
+    # return render_template('error.html', output='BLA')
     return response
 
 @application.route("/")
@@ -52,7 +53,6 @@ def search_index():
         i = request.args.get('id', 0, type=int)
         n = request.args.get('n', 0, type=int)
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
-        print(res)
     elif request.method == 'POST':
         f=request.files['ts']
         n=int(request.values['Number'])
