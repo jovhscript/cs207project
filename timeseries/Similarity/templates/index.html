@@ -36,6 +36,17 @@
 		<button class="button"><a href="/" id="homebutton">Back Home</a></button>
 		</center>
 		<br>
+		<center>
+			<h3>Upload TimeSeries</h3>
+			<p style="width: 50%">
+			Please upload a TimeSeries file to return closest search results:
+			</p>
+			<form action="/search_upload/results" method="post" enctype = "multipart/form-data">
+	  			<input style="display: inline-block" class="file" type="file" name="ts">
+				<input type="text" size="5" name="Number" placeholder="Number of Results">
+	  			<input style="display: inline-block" class="upload" type="submit" value= "Upload">
+			</form>
+		</center>
 		<br>
 		<div class="resultpane">
 			<center>
