@@ -2,7 +2,7 @@ from flask import Flask, request, render_template, jsonify
 import find_most_similiar
 from tstojson import *
 
-import meta_functions
+# import meta_functions
 import client
 import os, shutil
 import pickle
@@ -47,21 +47,23 @@ def indb():
 def search_index():
     if request.method == 'GET':
         i = request.args.get('id', '0', type=str)
-        if i.isdigit():
+        try:
             i = int(i)
-        else:
-            raise InvalidUsage('Index must be a integer', status_code=400)
+        except:
+            raise InvalidUsage('Index must be a positive integer', status_code=400)
         n = request.args.get('n', '1', type=str)
-        if n.isdigit():
+        try:
             n = int(n)
-        else:
-            print('here')
-            raise InvalidUsage('Number of neighbours must be a integer', status_code=400)
+        except:
+            raise InvalidUsage('Number of neighbours must be a positive integer', status_code=400)
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
     elif request.method == 'POST':
         # print(request.form.getlist('ts'))
         f=request.files['ts']
-        n=int(request.values['Number'])
+        try:
+            n=int(request.values['Number'])
+        except:
+            raise InvalidUsage('Number of neighbours must be a positive integer', status_code=400)
         print(f, n)
         if f.filename[-4:] != 'json':
             raise InvalidUsage('Invalid File Type Supplied', status_code=400)
@@ -138,8 +140,9 @@ def add_ts():
     except:
         os.mkdir('tmp/')
     f.save('tmp/'+f.filename)
+    res = meta_functions.meta_post(meta_functions.engine,'tmp/'+f.filename)
     shutil.rmtree('tmp/')
-    return jsonify(result=f.filename)
+    return jsonify(result=res)
 
 @application.route('/meta/<int:id>', methods=['GET'])
 def get_ts(id):

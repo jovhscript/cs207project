@@ -61,7 +61,7 @@ def meta_id(engine, request_id):
     out_rec = out.fetchall()
     out_col = out._metadata.keys
     ts = SMTimeSeries().from_db(id=request_id, dbname="ts_storagemanager.dbdb")
-    return [ts, out_rec, out_col]
+    return [out_col, [list(x) for x in out_rec], ts._times, ts._values]
 
 def meta_post(engine, filename):
     """
@@ -85,18 +85,21 @@ def meta_post(engine, filename):
     except:
         pass
 
-    level_choices = ['A', 'B', 'C', 'D', 'E', 'F']
+    ### inserting
     ts_new = SMTimeSeries(times=ts["times"], values=ts["values"], id=id_new, dbname="ts_storagemanager.dbdb").ts
     print("New timeseries successfully stored into StorageManager")
-    blarg_new = np.random.uniform()
-    level_new = np.random.choice(level_choices)
     mean_new = sized_ts.mean(ts_new)
     std_new = sized_ts.std(ts_new)
-
-    query = "INSERT INTO ts_postgresql (id, blarg, level, mean, std) VALUES ('{}', {}, '{}', {}, {})".format(id_new, blarg_new, level_new, mean_new, std_new)
+    query = "INSERT INTO ts_postgresql (id, blarg, level, mean, std) VALUES ('{}', {}, Null , Null , {})".format(id_new, mean_new, std_new)
     out = _make_query(engine, query)
     print("New metadata successfully stored into PostgreSQL")
-    return ts_new
+
+    ### quering the newly-inserted
+    query = "SELECT * FROM ts_postgresql WHERE id='{}'".format(id_new)
+    out = _make_query(engine, query)
+    out_rec = out.fetchall()
+    out_col = out._metadata.keys
+    return [out_col, [list(x) for x in out_rec], ts_new._times, ts_new._values]
 
 if __name__ == '__main__':
     ### create a json uploadable for testing meta_post():
