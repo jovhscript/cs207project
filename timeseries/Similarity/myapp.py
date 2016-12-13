@@ -102,7 +102,7 @@ def filter_meta():
 
     if ms != '':
         try:
-            ms = [float(x) for x in ms.split('-')]
+            ms = [float(x) for x in ms.split(':')]
             ms_flag = True
         except:
             raise InvalidUsage('Mean boundaries should be convertible to floats', status_code=400)
@@ -114,7 +114,7 @@ def filter_meta():
 
     if stds != '':
         try:
-            stds = [float(x) for x in stds.split('-')]
+            stds = [float(x) for x in stds.split(':')]
             std_flag = True
         except:
             raise InvalidUsage('Std boundaries should be convertible to floats', status_code=400)
