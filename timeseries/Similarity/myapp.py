@@ -33,7 +33,6 @@ class InvalidUsage(Exception):
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
-    # return render_template('error.html', output='BLA')
     return response
 
 @application.route("/")
@@ -147,6 +146,7 @@ def get_ts(id):
     if not isinstance(id, int):
         raise InvalidUsage('Number of neighbours must be a integer', status_code=400)
     # return task_db.fetch_task(id)
+    res = meta_functions.meta_id(meta_functions.engine, id)
     return jsonify(result=id)
     # @application.route("/meta")
 
