@@ -113,7 +113,24 @@ $(function() {
             processData: false,
             contentType: false,
             success: function(data) {
-      $("#tss").append(data.result);
+				meta = data.result[1][0];
+				metatitle = "<h3>Meta Data</h3><br><br>"
+				var metacontent = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>ID</th><th>Blarg</th><th>Level</th><th>Mean</th><th>St. Dev.</th></tr>"
+				metacontent += '<tr><td>' +  meta[0] + '</td><td>' + meta[1] + '</td><td>' + meta[2] + '</td><td>' + meta[3] + '</td><td>' + meta[4] + '</td><td>' + meta[5] + '</td></tr>';
+				metacontent += "</table>";
+				$("#tss").append(metatitle);
+				$("#tss").append(metacontent);
+		
+				times = data.result[2]
+				values = data.result[3]
+				tstitle = "<br><br><h3>TimeSeries</h3>"
+		
+				var tscontent = "<table id='result_table2'> <tr id='first'> <th>Time</th> <th>Value</th></tr>"
+				for(i=0; i<times.length; i++){
+				    tscontent += '<tr><td>' +  times[i] + '</td><td>' + values[i] + '</td></tr>';
+				}
+				$("#tss2").append(tstitle);
+				$("#tss2").append(tscontent);
     },
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
