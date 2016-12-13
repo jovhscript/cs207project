@@ -4,8 +4,6 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 from interfaces import SizedContainerTimeSeriesInterface as sized_ts
 from series import SMTimeSeries
-import numpy as np
-import pandas as pd
 import json
 from sqlalchemy import create_engine
 
@@ -55,7 +53,12 @@ def meta_filter(engine, filter_input):
 def meta_id(engine, request_id):
     """
     return metadata and timeseries by id
+
+    Parameter:
+    id: non-negative integer
     """
+    if (request_id<0) or (not isinstance(request_id, int)):
+        return "ERROR | id has to be a non-negative integer"
     query = "SELECT * FROM ts_postgresql WHERE id='{}'".format(request_id)
     out = _make_query(engine, query)
     out_rec = out.fetchall()
@@ -73,20 +76,31 @@ def meta_post(engine, filename):
     "ts": timeseries containing "times" and "values" as keys to lists
     }
     """
-    with open(filename) as data_file:
-        data = json.load(data_file)
+    try:
+        with open(filename) as data_file:
+            data = json.load(data_file)
+    except:
+        return "ERROR | JSON has incorrect filename or is corrupt"
 
-    id_new = data["id"]
-    ts = data["ts"]
+    try:
+        id_new = data["id"]
+        ts = data["ts"]
+        ts_times = ts["times"]
+        ts_values = ts["values"]
+    except:
+        return "ERROR | uploaded JSON's format is not valid"
 
     try:
         SMTimeSeries().from_db(id=id_new, dbname="ts_storagemanager.dbdb")
-        raise KeyError("ERROR: id already exist in database")
+        return "ERROR | id already exist in database"
     except:
         pass
 
     ### inserting
-    ts_new = SMTimeSeries(times=ts["times"], values=ts["values"], id=id_new, dbname="ts_storagemanager.dbdb").ts
+    try:
+        ts_new = SMTimeSeries(times=ts["times"], values=ts["values"], id=id_new, dbname="ts_storagemanager.dbdb").ts
+    except:
+        return "ERROR | input timeseries is not valid"
     print("New timeseries successfully stored into StorageManager")
     mean_new = sized_ts.mean(ts_new)
     std_new = sized_ts.std(ts_new)
