@@ -15,7 +15,9 @@ $(function() {
 		$("#tss").text(data.result);
     },
     error: function(xhr, status, error){
-    	console.log('error')
+    	console.log(xhr.responseText);	
+		var response = $.parseJSON(xhr.responseText);
+    	$("#error").text(response);
     }
 	});
     return false;
@@ -60,6 +62,7 @@ $(function() {
 		$("#tss").text(data.result);
     },
     error: function(xhr, status, error){
+    	console.log(xhr.responseText);	
     	console.log('error')
     }
 	});
