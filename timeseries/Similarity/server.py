@@ -19,7 +19,12 @@ def db_client(sock, client_addr):
         msg = sock.recv(65536)
         # print("msg", msg)
         if not msg:
-            raise TSDBConnectionError('Server socket connection failed\n')        
+            error = 'ERROR 400: SERVER CONNECTION FAILED'.encode('utf-8')
+            tosend = (len(error)).to_bytes(8, byteorder='little')+'E'.encode('utf-8')+error
+            sock.sendall(tosend)
+            sock.close()
+            raise TSDBConnectionError('Client socket connection failed\n')
+
         ts_interest, n, typ = msg.decode().split('|')
         if typ == 'json':
             ts_interest = sdecode(ts_interest)
@@ -31,7 +36,6 @@ def db_client(sock, client_addr):
             tss_to_return = find_most_similiar.find_most_similiar(ts_interest, int(n), vp, False)
         else:
             tss_to_return = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_interest, int(n), vp)
-            #import pdb;pdb.set_trace()
         
         if isinstance(tss_to_return, str):
             print ('Error', tss_to_return)
@@ -39,6 +43,9 @@ def db_client(sock, client_addr):
                 error = 'ERROR 400: NO SUCH INDEX IN DATABASE'.encode('utf-8')
             elif 'NUMBER' in tss_to_return:
                 error = 'ERROR 400: N should be between 1 and {}'.format(tss_to_return.split(' | ')[1]).encode('utf-8')
+            elif 'TYPE' in tss_to_return:
+                error = 'ERROR 400: input must be a time series'.encode('utf-8')
+
             tosend = (len(error)).to_bytes(8, byteorder='little')+'E'.encode('utf-8')+error
             sock.sendall(tosend)
             sock.close()

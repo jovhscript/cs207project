@@ -149,15 +149,15 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'bstree'):
             with open(filename, "rb") as f:
                 ts1 = pickle.load(f)
         except:
-            print ('Requested %s cannot be found in database, returning empty'%filename)
+            print ('Requested %s cannot be found in database, returning ERROR INDEX'%filename)
             return 'ERROR INDEX'
     else:
         ts1 = filename
 
     ## check data type
     if not isinstance(ts1, ts):
-        print ('Requested %s is not a TimeSeries instance, returning empty'%filename)
-        return []
+        print ('Requested %s is not a TimeSeries instance, returning ERROR TYPE'%filename)
+        return 'ERROR TYPE'
        
     #find the most similiar vantage point = d 
     vantage_pts_dist = []
