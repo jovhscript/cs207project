@@ -42,7 +42,7 @@ def sanity_check(filename,n):
     return ans
 
 
-def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype='bstree'):
+def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype='rbstree'):
     """
     Given a vantage point and a radius, find the points that fall within the
     circle around the vantage point. Then calculates the distance from all of these
@@ -78,7 +78,7 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype=
         distance.append([dist,"Timeseries"+str(l)]) 
     return distance
 
-def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype = 'bstree'):
+def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype = 'rbstree'):
     """
     Given a vantage point and a radius, find the points that fall within the
     circle around the vantage point. Then calculates the distance from all of these
@@ -130,7 +130,7 @@ def interpolate_to_match_input(ts_database, ts_input):
     interpolated_ts = ts(ts_input_times, interpolated_values)
     return interpolated_ts
 
-def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'bstree'):
+def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'rbstree'):
     """
     Finds n most similiar time series to the time series of interest (filename)
     by using the supplied vantage points
@@ -192,7 +192,7 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'bstree'):
         
     return file_names
 
-def similarity_program(arg, dbtype = 'bstree'):
+def similarity_program(arg, dbtype = 'rbstree'):
     """This is a command line program that finds similiar timeseries"""
     if dbtype == 'bstree':
         dbdir = 'VantagePointDatabases'

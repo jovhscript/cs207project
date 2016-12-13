@@ -12,7 +12,7 @@ with open('VantagePointDatabases/vp') as f:
     for line in f:
         vp.append(int(line.rstrip('\n'))) 
 
-def db_client(sock, client_addr):
+def db_client(sock, client_addr, dbtype = 'rbstree'):
     global vp
     print('Got connection from', client_addr) 
     while True:
@@ -32,10 +32,11 @@ def db_client(sock, client_addr):
         else:
             js = False
         # print("ts: {}, n closest: {}".format(ts_interest, n))
+
         if js:
-            tss_to_return = find_most_similiar.find_most_similiar(ts_interest, int(n), vp, False)
+            tss_to_return = find_most_similiar.find_most_similiar(ts_interest, int(n), vp, False, dbtype)
         else:
-            tss_to_return = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_interest, int(n), vp)
+            tss_to_return = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_interest, int(n), vp, dbtype)
         
         if isinstance(tss_to_return, str):
             print ('Error', tss_to_return)
@@ -48,7 +49,7 @@ def db_client(sock, client_addr):
 
             tosend = (len(error)).to_bytes(8, byteorder='little')+'E'.encode('utf-8')+error
             sock.sendall(tosend)
-            sock.close()
+            #sock.close()
 
         for t in tss_to_return:
             t.append(pickle.load(open("GeneratedTimeseries/"+t[1], 'rb')).__json__())
