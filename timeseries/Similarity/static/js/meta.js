@@ -35,7 +35,8 @@ $(function() {
 		$("#tss").text(data.result);
     },
     error: function(xhr, status, error){
-    	console.log('error')
+    	var response = $.parseJSON(xhr.responseText);
+    	$("#tss").text(response.message);
     }
 	});
     return false;
@@ -60,7 +61,9 @@ $(function() {
 		$("#tss").text(data.result);
     },
     error: function(xhr, status, error){
-    	console.log('error')
+    	var response = $.parseJSON(xhr.responseText);
+    	console.log(response.message);
+    	$("#tss").text(response.message);
     }
 	});
     return false;
@@ -87,7 +90,7 @@ $(function() {
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
     	console.log(response.message);
-    	$("#error").text(response.message);
+    	$("#tss").text(response.message);
     }
 	});
     return false;
