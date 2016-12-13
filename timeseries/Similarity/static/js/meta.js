@@ -12,7 +12,7 @@ $(function() {
 	type: 'GET',
 	url: '/meta/'+$('input[name="Index"]').val(),
     success: function(data) {
-		meta = data.result[1];
+		meta = data.result[1][0];
 		metatitle = "<h3>Meta Data</h3><br><br>"
 		var metacontent = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>ID</th><th>Blarg</th><th>Level</th><th>Mean</th><th>St. Dev.</th></tr>"
 		metacontent += '<tr><td>' +  meta[0] + '</td><td>' + meta[1] + '</td><td>' + meta[2] + '</td><td>' + meta[3] + '</td><td>' + meta[4] + '</td><td>' + meta[5] + '</td></tr>';
