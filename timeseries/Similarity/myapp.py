@@ -1,21 +1,9 @@
 from flask import Flask, request, render_template, jsonify
-#from flask.ext.sqlalchemy import SQLAlchemy, DeclarativeMeta
 import find_most_similiar
 from tstojson import *
-# import server
 import client
 import os, shutil
 application = Flask(__name__)
-
-## set up db configuration
-#user = "cs207"
-#password = "cs207password"
-#host = "localhost"
-##port = "5432"
-#db = "ts_postgres"
-#url = 'postgresql://{}:{}@{}:{}/{}'.format(user, password, host, port, db)
-#application.config['SQLALCHEMY_DATABASE_URI'] = url
-#db = SQLAlchemy(application)
 
 class InvalidUsage(Exception):
     status_code = 400
