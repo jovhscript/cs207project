@@ -72,13 +72,42 @@ def search_index():
         raise InvalidUsage(res, status_code=400)
     return jsonify(result=res)
 
-@application.route("/search_meta/")
+@application.route("/meta")
 def meta():
     return render_template('meta.html')
 
-@application.route("/search_meta/id", methods=['GET'])
-def search_meta1():
-    return sencode('Timeseries0.json')
+@application.route('/meta/', methods=['GET'])
+def get_all_meta():
+    return jsonify(result='all')
+
+@application.route('/meta/filter', methods=['GET'])
+def filter_meta():
+    ls = request.args.get('levels', 'A,B,C,D,E,F', type=str)
+    ls = ls.split(',')
+    ms = request.args.get('mean_range', '0-1', type=str)
+    ms = [float(x) for x in ms.split('-')]
+    stds = request.args.get('std_range', '0-1', type=str)
+    stds = [float(x) for x in stds.split('-')]
+    return jsonify(result=ls+ms+stds)
+
+@application.route('/meta/', methods=['POST'])
+def add_ts():
+    f=request.files['ts']
+    if f.filename[-4:] != 'json':
+        raise InvalidUsage('Invalid File Type Supplied', status_code=400)
+    try:
+        shutil.rmtree('tmp/')
+    except:
+        os.mkdir('tmp/')
+    f.save('tmp/'+f.filename)
+    shutil.rmtree('tmp/')
+    return jsonify(result=f.filename)
+
+@application.route('/meta/<int:id>', methods=['GET'])
+def get_ts(id):
+    # return task_db.fetch_task(id)
+    return jsonify(result=id)
+    # @application.route("/meta")
 
     # return render_template('upload.html', output=res)
 if __name__ == "__main__":

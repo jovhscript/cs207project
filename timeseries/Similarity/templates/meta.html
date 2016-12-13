@@ -19,9 +19,14 @@
 		<center>
 		<h3>Search Criteria</h3>
 		<br>
-		<h4>Search TimeSeries by Index</h4>
-	
-		Request a particular time series:
+		<h4>Search Time Series</h4>
+		Request all time series metadata:
+		<br>
+		<br>
+		<button class="button"><a href="javascript:void();" id="requestAll">Request All</a></button>
+		<br>
+		<br>
+		Or Request a particular time series:
 		<br>
 		<br>
 		ID
@@ -30,9 +35,10 @@
 		<br>
 		<br>
 		<h4>Add a TimeSeries to the Database</h4>
-		<form action="/search_upload/results" method="post" enctype = "multipart/form-data">
+		<form action="/meta/" id= 'postts' method="post" enctype = "multipart/form-data">
   			<input style="display: inline-block; width: 40%" class = "file" type="file" name="ts">
-  			<input style="display: inline-block; width: 10%" class = "upload" type="submit" value= "Upload">
+  			<button type="button" class="button" style="color: steelblue" id="submit_upload">Upload</button>
+  			
 		</form>
 		<br>
 		<br>
@@ -45,7 +51,7 @@
 		<br>
 		<br>
 		Standard Deviation Range: <input type="text" size="6" name="std_range" placeholder="0.0-1.0">
-		<button class="button"><a href="javascript:void();" id="requestTS">Request</a></button>
+		<button class="button"><a href="javascript:void();" id="requestFilter">Request</a></button>
 		<br>
 		<br>
 		<button class="button"><a href="/" id="homebutton">Back Home</a></button>
