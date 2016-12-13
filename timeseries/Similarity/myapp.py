@@ -1,21 +1,18 @@
 from flask import Flask, request, render_template, jsonify
-#from flask.ext.sqlalchemy import SQLAlchemy, DeclarativeMeta
 import find_most_similiar
 from tstojson import *
-# import server
+
+# import meta_functions
 import client
 import os, shutil
-application = Flask(__name__)
+import pickle
+import logging
 
-## set up db configuration
-#user = "cs207"
-#password = "cs207password"
-#host = "localhost"
-##port = "5432"
-#db = "ts_postgres"
-#url = 'postgresql://{}:{}@{}:{}/{}'.format(user, password, host, port, db)
-#application.config['SQLALCHEMY_DATABASE_URI'] = url
-#db = SQLAlchemy(application)
+
+application = Flask(__name__)
+file_handler = logging.FileHandler(filename='error.log')
+file_handler.setLevel(logging.WARNING)
+application.logger.addHandler(file_handler)
 
 class InvalidUsage(Exception):
     status_code = 400
@@ -36,7 +33,6 @@ class InvalidUsage(Exception):
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
-    # return render_template('error.html', output='BLA')
     return response
 
 @application.route("/")
@@ -51,21 +47,23 @@ def indb():
 def search_index():
     if request.method == 'GET':
         i = request.args.get('id', '0', type=str)
-        if i.isdigit():
+        try:
             i = int(i)
-        else:
-            raise InvalidUsage('Index must be a integer', status_code=400)
+        except:
+            raise InvalidUsage('Index must be a positive integer', status_code=400)
         n = request.args.get('n', '1', type=str)
-        if n.isdigit():
+        try:
             n = int(n)
-        else:
-            print('here')
-            raise InvalidUsage('Number of neighbours must be a integer', status_code=400)
+        except:
+            raise InvalidUsage('Number of neighbours must be a positive integer', status_code=400)
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
     elif request.method == 'POST':
         # print(request.form.getlist('ts'))
         f=request.files['ts']
-        n=int(request.values['Number'])
+        try:
+            n=int(request.values['Number'])
+        except:
+            raise InvalidUsage('Number of neighbours must be a positive integer', status_code=400)
         print(f, n)
         if f.filename[-4:] != 'json':
             raise InvalidUsage('Invalid File Type Supplied', status_code=400)
@@ -87,23 +85,50 @@ def meta():
 
 @application.route('/meta/', methods=['GET'])
 def get_all_meta():
-    return jsonify(result='all')
+    res = meta_functions.meta_get(meta_functions.engine)
+    toreturn = [res[0], [list(x) for x in res[1]]]
+    return jsonify(result=toreturn)
 
 @application.route('/meta/filter', methods=['GET'])
 def filter_meta():
-    ls = request.args.get('levels', 'A,B,C,D,E,F', type=str)
-    ls = ls.split(',')
-    ms = request.args.get('mean_range', '0-1', type=str)
-    try:
-        ms = [float(x) for x in ms.split('-')]
-    except:
-        raise InvalidUsage('Mean boundaries should be convertible to floats', status_code=400)
-    stds = request.args.get('std_range', '0-1', type=str)
-    try:
-        stds = [float(x) for x in stds.split('-')]
-    except:
-        raise InvalidUsage('Std boundaries should be convertible to floats', status_code=400)
-    return jsonify(result=ls+ms+stds)
+    ls = request.args.get('levels', None, type=str)
+    ls_flag = False
+    ms = request.args.get('mean_range', None, type=str)
+    ms_flag = False
+    stds = request.args.get('std_range', None, type=str)
+    std_flag = False
+    
+    if ls != '':
+        ls = ls.replace(' ','').split(',')
+        ls_flag=True
+
+    if ms != '':
+        try:
+            ms = [float(x) for x in ms.split(':')]
+            ms_flag = True
+        except:
+            raise InvalidUsage('Mean boundaries should be convertible to floats', status_code=400)
+    else:
+        ms = None
+
+    if ls_flag and ms_flag:
+        raise InvalidUsage('Select only one filter at a time', status_code=400)
+
+    if stds != '':
+        try:
+            stds = [float(x) for x in stds.split(':')]
+            std_flag = True
+        except:
+            raise InvalidUsage('Std boundaries should be convertible to floats', status_code=400)
+    else:
+        stds = None
+
+    if (ls_flag and std_flag) or (ms_flag and std_flag):
+        raise InvalidUsage('Select only one filter at a time', status_code=400)
+    
+    res = meta_functions.meta_filter(meta_functions.engine, [ls, ms, stds])
+    toreturn = [res[0], [list(x) for x in res[1]]]
+    return jsonify(result=toreturn)
 
 @application.route('/meta/', methods=['POST'])
 def add_ts():
@@ -115,15 +140,17 @@ def add_ts():
     except:
         os.mkdir('tmp/')
     f.save('tmp/'+f.filename)
+    res = meta_functions.meta_post(meta_functions.engine,'tmp/'+f.filename)
     shutil.rmtree('tmp/')
-    return jsonify(result=f.filename)
+    return jsonify(result=res)
 
 @application.route('/meta/<int:id>', methods=['GET'])
 def get_ts(id):
     if not isinstance(id, int):
         raise InvalidUsage('Number of neighbours must be a integer', status_code=400)
     # return task_db.fetch_task(id)
-    return jsonify(result=id)
+    res = meta_functions.meta_id(meta_functions.engine, id)
+    return jsonify(result=res)
     # @application.route("/meta")
 
     # return render_template('upload.html', output=res)

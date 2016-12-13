@@ -46,11 +46,13 @@
 		<br>
 		Levels: <input type="text" size="6" name="levels" placeholder="A,B,C,...">
 		<br>
+		OR
 		<br>
-		Mean Range: <input type="text" size="5.5" name="mean_range" placeholder="1.0-1.6">
+		Mean Range: <input type="text" size="5.5" name="mean_range" placeholder="1.0:1.6">
 		<br>
+		OR
 		<br>
-		Standard Deviation Range: <input type="text" size="6" name="std_range" placeholder="0.0-1.0">
+		Standard Deviation Range: <input type="text" size="6" name="std_range" placeholder="0.0:1.0">
 		<button class="button"><a href="javascript:void();" id="requestFilter">Request</a></button>
 		<br>
 		<br>
@@ -60,7 +62,11 @@
 	<div class="chartpane">
 		<center><h3>Results</h3></center>
 		<span id="tss"></span>
+		<br>
+		<br>
+		<span id="tss2"></span>
 		<span id="error"></span>
+
 	</div>
 
     </body>

@@ -30,7 +30,8 @@ $(function() {
 	  plot_data = data.result;
     },
     error: function(xhr, status, error){
-    	var response = $.parseJSON(xhr.responseText);
+		console.log(xhr.responseText);
+		var response = $.parseJSON(xhr.responseText);
     	$("#error").text(response.message);
     }
 	});

@@ -12,10 +12,30 @@ $(function() {
 	type: 'GET',
 	url: '/meta/'+$('input[name="Index"]').val(),
     success: function(data) {
-		$("#tss").text(data.result);
+		meta = data.result[1][0];
+		metatitle = "<h3>Meta Data</h3><br><br>"
+		var metacontent = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>ID</th><th>Blarg</th><th>Level</th><th>Mean</th><th>St. Dev.</th></tr>"
+		metacontent += '<tr><td>' +  meta[0] + '</td><td>' + meta[1] + '</td><td>' + meta[2] + '</td><td>' + meta[3] + '</td><td>' + meta[4] + '</td><td>' + meta[5] + '</td></tr>';
+		metacontent += "</table>";
+		$("#tss").append(metatitle);
+		$("#tss").append(metacontent);
+		
+		times = data.result[2]
+		values = data.result[3]
+		tstitle = "<br><br><h3>TimeSeries</h3>"
+		
+		var tscontent = "<table id='result_table2'> <tr id='first'> <th>Time</th> <th>Value</th></tr>"
+		for(i=0; i<times.length; i++){
+		    tscontent += '<tr><td>' +  times[i] + '</td><td>' + values[i] + '</td></tr>';
+		}
+		$("#tss2").append(tstitle);
+		$("#tss2").append(tscontent);
+		
     },
     error: function(xhr, status, error){
-    	console.log('error')
+    	console.log(xhr.responseText);	
+		var response = $.parseJSON(xhr.responseText);
+    	$("#error").text(response);
     }
 	});
     return false;
@@ -26,27 +46,31 @@ $(function() {
 $(function() {
   $('a#requestAll').bind('click', function() {
   	d3.select("#error").text('');
-	d3.select("#plotsvg").remove();
 	d3.select("#result_table").remove();
     $.ajax({
 	type: 'GET',
 	url: '/meta/',
     success: function(data) {
-		$("#tss").text(data.result);
+		res = data.result[1];
+		var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>ID</th><th>Blarg</th><th>Level</th><th>Mean</th><th>St. Dev.</th></tr>"
+		for(i=0; i<res.length; i++){
+		    content += '<tr><td>' +  res[i][0] + '</td><td>' + res[i][1] + '</td><td>' + res[i][2] + '</td><td>' + res[i][3] + '</td><td>' + res[i][4] + '</td><td>' + res[i][5] + '</td></tr>';
+		}
+		content += "</table>";
+		$("#tss").append(content);
     },
     error: function(xhr, status, error){
-    	console.log('error')
+    	var response = $.parseJSON(xhr.responseText);
+    	$("#error").text(response.message);
     }
 	});
     return false;
-  addRowHandlers();
   });
 });
 
 $(function() {
   $('a#requestFilter').bind('click', function() {
   	d3.select("#error").text('');
-	d3.select("#plotsvg").remove();
 	d3.select("#result_table").remove();
     $.ajax({
 	type: 'GET',
@@ -57,10 +81,18 @@ $(function() {
       std_range: $('input[name="std_range"]').val()
     },
     success: function(data) {
-		$("#tss").text(data.result);
+		res = data.result[1];
+		var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>ID</th><th>Blarg</th><th>Level</th><th>Mean</th><th>St. Dev.</th></tr>"
+		for(i=0; i<res.length; i++){
+		    content += '<tr><td>' +  res[i][0] + '</td><td>' + res[i][1] + '</td><td>' + res[i][2] + '</td><td>' + res[i][3] + '</td><td>' + res[i][4] + '</td><td>' + res[i][5] + '</td></tr>';
+		}
+		content += "</table>";
+		$("#tss").append(content);
     },
     error: function(xhr, status, error){
-    	console.log('error')
+    	var response = $.parseJSON(xhr.responseText);
+    	console.log(response.message);
+    	$("#error").text(response.message);
     }
 	});
     return false;
@@ -71,7 +103,6 @@ $(function() {
 $(function() {
     $('#submit_upload').click(function() {
 		d3.select("#error").text('');
-		d3.select("#plotsvg").remove();
 		d3.select("#result_table").remove();
         event.preventDefault();
         var form_data = new FormData($('#postts')[0]);
@@ -82,7 +113,24 @@ $(function() {
             processData: false,
             contentType: false,
             success: function(data) {
-      $("#tss").append(data.result);
+				meta = data.result[1][0];
+				metatitle = "<h3>Meta Data</h3><br><br>"
+				var metacontent = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>ID</th><th>Blarg</th><th>Level</th><th>Mean</th><th>St. Dev.</th></tr>"
+				metacontent += '<tr><td>' +  meta[0] + '</td><td>' + meta[1] + '</td><td>' + meta[2] + '</td><td>' + meta[3] + '</td><td>' + meta[4] + '</td><td>' + meta[5] + '</td></tr>';
+				metacontent += "</table>";
+				$("#tss").append(metatitle);
+				$("#tss").append(metacontent);
+		
+				times = data.result[2]
+				values = data.result[3]
+				tstitle = "<br><br><h3>TimeSeries</h3>"
+		
+				var tscontent = "<table id='result_table2'> <tr id='first'> <th>Time</th> <th>Value</th></tr>"
+				for(i=0; i<times.length; i++){
+				    tscontent += '<tr><td>' +  times[i] + '</td><td>' + values[i] + '</td></tr>';
+				}
+				$("#tss2").append(tstitle);
+				$("#tss2").append(tscontent);
     },
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
@@ -236,28 +284,5 @@ function LoadData(svg){
 			.attr("d",pathline(d))
 		
 	})
-	/*var path2 = svg.selectAll(".line")
-		.data(resultarray);
-	path2.enter().append("path")
-		.attr("class","line");	
-	path2.transition()
-		.duration(800)
-		.attr("d",pathline(resultarray));
-		
-	path2.exit()
-		.transition()
-		.duration(800)
-		.style('fill-opacity', 1e-6)
-		.remove();*/
-				
-	/*var circle = svg.selectAll("circle")
-		.data(resultarray);
-	circle.enter().append("circle").attr("fill", "steelblue");
-	circle.transition().duration(800)
-		.attr("r",2.5)
-		.attr("cx", function(d) { return x(d.time); })
-		.attr("cy", function(d) { return y(d.value)});
-				
-	circle.exit().transition().duration(800).remove();*/
 
 }
