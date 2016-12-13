@@ -55,10 +55,11 @@ def search_index():
             i = int(i)
         else:
             raise InvalidUsage('Index must be a integer', status_code=400)
-        n = request.args.get('n', '1', type=int)
+        n = request.args.get('n', '1', type=str)
         if n.isdigit():
             n = int(n)
         else:
+            print('here')
             raise InvalidUsage('Number of neighbours must be a integer', status_code=400)
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
     elif request.method == 'POST':
