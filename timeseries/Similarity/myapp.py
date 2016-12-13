@@ -91,19 +91,38 @@ def get_all_meta():
 
 @application.route('/meta/filter', methods=['GET'])
 def filter_meta():
-    ls = request.args.get('levels', 'A,B,C,D,E,F', type=str)
-    ls = ls.split(',')
-    ms = request.args.get('mean_range', '0-1', type=str)
-    try:
-        ms = [float(x) for x in ms.split('-')]
-    except:
-        raise InvalidUsage('Mean boundaries should be convertible to floats', status_code=400)
-    stds = request.args.get('std_range', '0-1', type=str)
-    try:
-        stds = [float(x) for x in stds.split('-')]
-    except:
-        raise InvalidUsage('Std boundaries should be convertible to floats', status_code=400)
-    return jsonify(result=ls+ms+stds)
+    ls = request.args.get('levels', None, type=str)
+    ls_flag = False
+    ms = request.args.get('mean_range', None, type=str)
+    ms_flag = False
+    stds = request.args.get('std_range', None, type=str)
+    std_flag = False
+    
+    if ls != '':
+        ls = ls.split(',')
+        ls_flag=True
+
+    if ms != '':
+        try:
+            ms = [float(x) for x in ms.split('-')]
+            ms_flag = True
+        except:
+            raise InvalidUsage('Mean boundaries should be convertible to floats', status_code=400)
+
+    if ls_flag and ms_flag:
+        raise InvalidUsage('Select only one filter at a time', status_code=400)
+
+    if stds != '':
+        try:
+            stds = [float(x) for x in stds.split('-')]
+            std_flag = True
+        except:
+            raise InvalidUsage('Std boundaries should be convertible to floats', status_code=400)
+
+    if (ls_flag and std_flag) or (ms_flag and std_flag):
+        raise InvalidUsage('Select only one filter at a time', status_code=400)
+    res = [ls, ms, stds]
+    return jsonify(result=res)
 
 @application.route('/meta/', methods=['POST'])
 def add_ts():
