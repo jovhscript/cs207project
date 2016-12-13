@@ -5,7 +5,7 @@ var times, values;
 
 $(function() {
   $('a#requestTS').bind('click', function() {
-  	d3.select("#error").remove();
+  	d3.select("#error").text('');
 	d3.select("#plotsvg").remove();
 	d3.select("#result_table").remove();
     $.ajax({
@@ -25,7 +25,7 @@ $(function() {
 
 $(function() {
   $('a#requestAll').bind('click', function() {
-  	d3.select("#error").remove();
+  	d3.select("#error").text('');
 	d3.select("#plotsvg").remove();
 	d3.select("#result_table").remove();
     $.ajax({
@@ -45,7 +45,7 @@ $(function() {
 
 $(function() {
   $('a#requestFilter').bind('click', function() {
-  	d3.select("#error").remove();
+  	d3.select("#error").text('');
 	d3.select("#plotsvg").remove();
 	d3.select("#result_table").remove();
     $.ajax({
@@ -70,7 +70,7 @@ $(function() {
 
 $(function() {
     $('#submit_upload').click(function() {
-		d3.select("#error").remove();
+		d3.select("#error").text('');
 		d3.select("#plotsvg").remove();
 		d3.select("#result_table").remove();
         event.preventDefault();
@@ -87,7 +87,7 @@ $(function() {
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
     	console.log(response.message);
-    	$("#tss").text(response.message);
+    	$("#error").text(response.message);
     }
 	});
     return false;
