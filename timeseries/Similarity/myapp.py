@@ -98,7 +98,7 @@ def filter_meta():
     std_flag = False
     
     if ls != '':
-        ls = ls.split(',')
+        ls = ls.replace(' ','').split(',')
         ls_flag=True
 
     if ms != '':
