@@ -50,7 +50,11 @@ def indb():
 @application.route("/simsearch/", methods=['GET', 'POST'])
 def search_index():
     if request.method == 'GET':
-        i = request.args.get('id', 0, type=int)
+        i = request.args.get('id', '0', type=str)
+        if i.isdigit():
+            i = int(i)
+        else:
+            raise InvalidUsage('Index must be a integer', status_code=400)
         n = request.args.get('n', 0, type=int)
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
     elif request.method == 'POST':
