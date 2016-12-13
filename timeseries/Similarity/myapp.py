@@ -1,13 +1,13 @@
 from flask import Flask, request, render_template, jsonify
-#from flask.ext.sqlalchemy import SQLAlchemy, DeclarativeMeta
 import find_most_similiar
 from tstojson import *
-# import server
+
 import meta_functions
 import client
 import os, shutil
 import pickle
 import logging
+
 
 application = Flask(__name__)
 file_handler = logging.FileHandler(filename='error.log')

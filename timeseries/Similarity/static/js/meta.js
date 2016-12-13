@@ -35,7 +35,7 @@ $(function() {
     success: function(data) {
 		res = data.result[1];
 		var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>ID</th><th>Blarg</th><th>Level</th><th>Mean</th><th>St. Dev.</th></tr>"
-		for(i=0; i<data.result.length; i++){
+		for(i=0; i<res.length; i++){
 		    content += '<tr><td>' +  res[i][0] + '</td><td>' + res[i][1] + '</td><td>' + res[i][2] + '</td><td>' + res[i][3] + '</td><td>' + res[i][4] + '</td><td>' + res[i][5] + '</td></tr>';
 		}
 		content += "</table>";
@@ -64,7 +64,13 @@ $(function() {
       std_range: $('input[name="std_range"]').val()
     },
     success: function(data) {
-		$("#tss").text(data.result);
+		res = data.result[1];
+		var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>ID</th><th>Blarg</th><th>Level</th><th>Mean</th><th>St. Dev.</th></tr>"
+		for(i=0; i<res.length; i++){
+		    content += '<tr><td>' +  res[i][0] + '</td><td>' + res[i][1] + '</td><td>' + res[i][2] + '</td><td>' + res[i][3] + '</td><td>' + res[i][4] + '</td><td>' + res[i][5] + '</td></tr>';
+		}
+		content += "</table>";
+		$("#tss").append(content);
     },
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
