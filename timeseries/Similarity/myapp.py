@@ -55,7 +55,12 @@ def search_index():
             i = int(i)
         else:
             raise InvalidUsage('Index must be a integer', status_code=400)
-        n = request.args.get('n', 0, type=int)
+        n = request.args.get('n', '1', type=str)
+        if n.isdigit():
+            n = int(n)
+        else:
+            print('here')
+            raise InvalidUsage('Number of neighbours must be a integer', status_code=400)
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
     elif request.method == 'POST':
         # print(request.form.getlist('ts'))
@@ -89,9 +94,15 @@ def filter_meta():
     ls = request.args.get('levels', 'A,B,C,D,E,F', type=str)
     ls = ls.split(',')
     ms = request.args.get('mean_range', '0-1', type=str)
-    ms = [float(x) for x in ms.split('-')]
+    try:
+        ms = [float(x) for x in ms.split('-')]
+    except:
+        raise InvalidUsage('Mean boundaries should be convertible to floats', status_code=400)
     stds = request.args.get('std_range', '0-1', type=str)
-    stds = [float(x) for x in stds.split('-')]
+    try:
+        stds = [float(x) for x in stds.split('-')]
+    except:
+        raise InvalidUsage('Std boundaries should be convertible to floats', status_code=400)
     return jsonify(result=ls+ms+stds)
 
 @application.route('/meta/', methods=['POST'])
@@ -109,6 +120,8 @@ def add_ts():
 
 @application.route('/meta/<int:id>', methods=['GET'])
 def get_ts(id):
+    if not isinstance(id, int):
+        raise InvalidUsage('Number of neighbours must be a integer', status_code=400)
     # return task_db.fetch_task(id)
     return jsonify(result=id)
     # @application.route("/meta")
