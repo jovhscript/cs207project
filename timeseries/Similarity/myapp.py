@@ -3,19 +3,16 @@ from flask import Flask, request, render_template, jsonify
 import find_most_similiar
 from tstojson import *
 # import server
+import meta_functions
 import client
 import os, shutil
-application = Flask(__name__)
+import pickle
+import logging
 
-## set up db configuration
-#user = "cs207"
-#password = "cs207password"
-#host = "localhost"
-##port = "5432"
-#db = "ts_postgres"
-#url = 'postgresql://{}:{}@{}:{}/{}'.format(user, password, host, port, db)
-#application.config['SQLALCHEMY_DATABASE_URI'] = url
-#db = SQLAlchemy(application)
+application = Flask(__name__)
+file_handler = logging.FileHandler(filename='error.log')
+file_handler.setLevel(logging.WARNING)
+application.logger.addHandler(file_handler)
 
 class InvalidUsage(Exception):
     status_code = 400
@@ -87,7 +84,9 @@ def meta():
 
 @application.route('/meta/', methods=['GET'])
 def get_all_meta():
-    return jsonify(result='all')
+    res = meta_functions.meta_get(meta_functions.engine)
+    toreturn = [res[0], [list(x) for x in res[1]]]
+    return jsonify(result=toreturn)
 
 @application.route('/meta/filter', methods=['GET'])
 def filter_meta():
@@ -108,6 +107,8 @@ def filter_meta():
             ms_flag = True
         except:
             raise InvalidUsage('Mean boundaries should be convertible to floats', status_code=400)
+    else:
+        ms = None
 
     if ls_flag and ms_flag:
         raise InvalidUsage('Select only one filter at a time', status_code=400)
@@ -118,11 +119,15 @@ def filter_meta():
             std_flag = True
         except:
             raise InvalidUsage('Std boundaries should be convertible to floats', status_code=400)
+    else:
+        stds = None
 
     if (ls_flag and std_flag) or (ms_flag and std_flag):
         raise InvalidUsage('Select only one filter at a time', status_code=400)
-    res = [ls, ms, stds]
-    return jsonify(result=res)
+    
+    res = meta_functions.meta_filter(meta_functions.engine, [ls, ms, stds])
+    toreturn = [res[0], [list(x) for x in res[1]]]
+    return jsonify(result=toreturn)
 
 @application.route('/meta/', methods=['POST'])
 def add_ts():

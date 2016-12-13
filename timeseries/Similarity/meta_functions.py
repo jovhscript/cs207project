@@ -1,12 +1,14 @@
 import os, sys
 import pickle
-sys.path.append("../")
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 from interfaces import SizedContainerTimeSeriesInterface as sized_ts
 from series import SMTimeSeries
 import numpy as np
 import pandas as pd
 import json
 from sqlalchemy import create_engine
+
 
 # set up db configuration
 user = "cs207"
@@ -96,15 +98,16 @@ def meta_post(engine, filename):
     print("New metadata successfully stored into PostgreSQL")
     return ts_new
 
-### create a json uploadable for testing meta_post():
-test_dict = {"id": 1001,
-             "ts": {
-                    "times": [1, 2, 3, 4, 5],
-                    "values": [0.98, 0.99, 1, 0.99, 0.98]
-    }}
+if __name__ == '__main__':
+    ### create a json uploadable for testing meta_post():
+    test_dict = {"id": 1001,
+                 "ts": {
+                        "times": [1, 2, 3, 4, 5],
+                        "values": [0.98, 0.99, 1, 0.99, 0.98]
+        }}
 
-with open("Timeseries1001.json", 'w') as fp:
-    json.dump(test_dict, fp)
+    with open("Timeseries1001.json", 'w') as fp:
+        json.dump(test_dict, fp)
 
-meta_post(engine, 'Timeseries1001.json')
-print(meta_id(engine, 1001))
+    meta_post(engine, 'Timeseries1001.json')
+    print(meta_id(engine, 1001))
