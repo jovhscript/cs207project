@@ -8,7 +8,7 @@ sys.path.insert(0,parentdir)
 
 import unittest
 from pytest import raises
-import BinarySearchDatabase 
+import RedBlackSearchDatabase 
 from generate_time_series import generate_time_series
 from pick_vantage_points import pick_vantage_points
 from find_most_similiar import find_most_similiar, sanity_check
@@ -19,11 +19,11 @@ from scipy import signal
 import os
 import pickle
 
-class DataBase_tests(unittest.TestCase): 
+class RedBlackDataBase_tests(unittest.TestCase): 
     def setUp(self):
         if os.path.isfile("/tmp/test.dbdb"):
             os.remove("/tmp/test.dbdb")
-        self.db1 = BinarySearchDatabase.connect("/tmp/test.dbdb")
+        self.db1 = RedBlackSearchDatabase.connect("/tmp/test.dbdb")
         self.db1.set(2,'database1')
         self.db1.set(1,'database2')
         self.db1.set(0.5,'database3')
@@ -38,7 +38,7 @@ class DataBase_tests(unittest.TestCase):
         del self.db1
         
     def test_nodes_less_than(self):
-        db1 = BinarySearchDatabase.connect("/tmp/test.dbdb")
+        db1 = RedBlackSearchDatabase.connect("/tmp/test.dbdb")
         assert (db1.get(3.2222) == 'database4')
         assert (db1.get_nodes_less_than(2) == ['database3', 'database2', 'database1'])
         assert (db1.get_nodes_less_than(4.5) == ['database3', 'database2', 'database1', 'database4', 'database5'])
@@ -47,7 +47,7 @@ class DataBase_tests(unittest.TestCase):
         db1.close()
     
     def test_nodes_greater_than(self):
-        db1 = BinarySearchDatabase.connect("/tmp/test.dbdb")
+        db1 = RedBlackSearchDatabase.connect("/tmp/test.dbdb")
         assert (db1.get_nodes_greater_than(2) == ['database1', 'database4', 'database5', 'database6', 'database7'])
         assert (db1.get_nodes_greater_than(4.5) == ['database6', 'database7'])
         assert (db1.get_nodes_greater_than(5) == ['database6', 'database7'])
@@ -66,15 +66,15 @@ class DataBase_tests(unittest.TestCase):
             
         
     def test_pick_vantage_points(self):
-        vp = np.array(pick_vantage_points(20))
+        vp = np.array(pick_vantage_points(20, dbtype='rbstree'))
         assert (vp >= 0).all() and (vp <= 999).all()
         for i in range(1000):
-            db = BinarySearchDatabase.connect("VantagePointDatabases/"+str(i)+".dbdb")
+            db = RedBlackSearchDatabase.connect("VantagePointDatabases_RedBlack/"+str(i)+".dbdb")
             db.close()
             
     def test_find_most_similiar(self):
         vp = []
-        with open('VantagePointDatabases/vp') as f:
+        with open('VantagePointDatabases_RedBlack/vp') as f:
             for line in f:
                 vp.append(int(line.rstrip('\n')))
 
@@ -82,20 +82,24 @@ class DataBase_tests(unittest.TestCase):
         n = 20
         ans = find_most_similiar(filename, n, vp)
         ans2 = sanity_check(filename,n)
-        assert [x[1] for x in ans[1:]] == ans2[:19]
+
+        ## the assertion here is slightly different from the one
+        ## in test_database since RedBlackSearchDatabase organizes
+        ## key/values differently from BinarySearchDatabase to keep
+        ## the tree balanced
+        assert np.sum([x[1] not in ans2[:19] for x in ans[1:]]) == 0
         
         filename = "GeneratedTimeseries/Timeseries932"
         n = 3
         ans = find_most_similiar(filename, n, vp)
         ans2 = sanity_check(filename,n)
-        assert [x[1] for x in ans[1:]]  == ans2[:2]    
+        assert np.sum([x[1] not in ans2[:2] for x in ans[1:]])  == 0
         
         filename = "GeneratedTimeseries/Timeseries32"
         n = 5
         ans = find_most_similiar(filename, n, vp)
         ans2 = sanity_check(filename,n)
-        assert [x[1] for x in ans[1:]] == ans2[:4] 
-                    
+        assert np.sum([x[1] not in ans2[:4] for x in ans[1:]]) == 0
                               
                                   
 if __name__=='__main__':
