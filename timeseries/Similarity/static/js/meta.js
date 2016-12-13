@@ -15,7 +15,9 @@ $(function() {
 		$("#tss").text(data.result);
     },
     error: function(xhr, status, error){
-    	console.log('error')
+    	console.log(xhr.responseText);	
+		var response = $.parseJSON(xhr.responseText);
+    	$("#error").text(response);
     }
 	});
     return false;
@@ -26,21 +28,25 @@ $(function() {
 $(function() {
   $('a#requestAll').bind('click', function() {
   	d3.select("#error").text('');
-	d3.select("#plotsvg").remove();
 	d3.select("#result_table").remove();
     $.ajax({
 	type: 'GET',
 	url: '/meta/',
     success: function(data) {
-		$("#tss").text(data.result);
+		res = data.result[1];
+		var content = "<table id='result_table'> <tr id='first'> <th>Index</th> <th>ID</th><th>Blarg</th><th>Level</th><th>Mean</th><th>St. Dev.</th></tr>"
+		for(i=0; i<data.result.length; i++){
+		    content += '<tr><td>' +  res[i][0] + '</td><td>' + res[i][1] + '</td><td>' + res[i][2] + '</td><td>' + res[i][3] + '</td><td>' + res[i][4] + '</td><td>' + res[i][5] + '</td></tr>';
+		}
+		content += "</table>";
+		$("#tss").append(content);
     },
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
-    	$("#tss").text(response.message);
+    	$("#error").text(response.message);
     }
 	});
     return false;
-  addRowHandlers();
   });
 });
 
@@ -63,7 +69,7 @@ $(function() {
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
     	console.log(response.message);
-    	$("#tss").text(response.message);
+    	$("#error").text(response.message);
     }
 	});
     return false;
@@ -90,7 +96,7 @@ $(function() {
     error: function(xhr, status, error){
     	var response = $.parseJSON(xhr.responseText);
     	console.log(response.message);
-    	$("#tss").text(response.message);
+    	$("#error").text(response.message);
     }
 	});
     return false;
@@ -239,28 +245,5 @@ function LoadData(svg){
 			.attr("d",pathline(d))
 		
 	})
-	/*var path2 = svg.selectAll(".line")
-		.data(resultarray);
-	path2.enter().append("path")
-		.attr("class","line");	
-	path2.transition()
-		.duration(800)
-		.attr("d",pathline(resultarray));
-		
-	path2.exit()
-		.transition()
-		.duration(800)
-		.style('fill-opacity', 1e-6)
-		.remove();*/
-				
-	/*var circle = svg.selectAll("circle")
-		.data(resultarray);
-	circle.enter().append("circle").attr("fill", "steelblue");
-	circle.transition().duration(800)
-		.attr("r",2.5)
-		.attr("cx", function(d) { return x(d.time); })
-		.attr("cy", function(d) { return y(d.value)});
-				
-	circle.exit().transition().duration(800).remove();*/
 
 }
