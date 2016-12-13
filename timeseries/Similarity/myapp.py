@@ -33,7 +33,6 @@ class InvalidUsage(Exception):
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
-    # return render_template('error.html', output='BLA')
     return response
 
 @application.route("/")
@@ -98,12 +97,12 @@ def filter_meta():
     std_flag = False
     
     if ls != '':
-        ls = ls.split(',')
+        ls = ls.replace(' ','').split(',')
         ls_flag=True
 
     if ms != '':
         try:
-            ms = [float(x) for x in ms.split('-')]
+            ms = [float(x) for x in ms.split(':')]
             ms_flag = True
         except:
             raise InvalidUsage('Mean boundaries should be convertible to floats', status_code=400)
@@ -115,7 +114,7 @@ def filter_meta():
 
     if stds != '':
         try:
-            stds = [float(x) for x in stds.split('-')]
+            stds = [float(x) for x in stds.split(':')]
             std_flag = True
         except:
             raise InvalidUsage('Std boundaries should be convertible to floats', status_code=400)
@@ -147,6 +146,7 @@ def get_ts(id):
     if not isinstance(id, int):
         raise InvalidUsage('Number of neighbours must be a integer', status_code=400)
     # return task_db.fetch_task(id)
+    res = meta_functions.meta_id(meta_functions.engine, id)
     return jsonify(result=id)
     # @application.route("/meta")
 
