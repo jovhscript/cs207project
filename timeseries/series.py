@@ -59,7 +59,7 @@ class SMTimeSeries(SizedContainerTimeSeriesInterface):
         -----
         - If no values are passed, then the instance rely on "from_db" method for valuation
         """
-        if values:
+        if values is not None:
             self.db= CreateDB(dbname)
             self.ts = TimeSeries(values, times)
             self.id = self.db.store_ts(id=id, ts=self.ts)
