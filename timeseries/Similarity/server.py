@@ -7,7 +7,7 @@ import find_most_similiar
 from tstojson import *
 from tsdb_error import *
 
-with open('VantagePointDatabases/vp') as f:
+with open('VantagePointDatabases_RedBlack/vp') as f:
     vp = []
     for line in f:
         vp.append(int(line.rstrip('\n'))) 

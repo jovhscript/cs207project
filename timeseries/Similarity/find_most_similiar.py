@@ -62,6 +62,9 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype=
         dbdir = 'VantagePointDatabases_RedBlack'
         #open the redblacksearch database for that vantage point
         db = RedBlackSearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(closest_vantage_pt)))
+    else:
+        raise ValueError('dbtype %s not recognized'%dbtype)
+
     #open database for that vantage point
     
     #find all light curves within 2d of the vantage point
@@ -99,6 +102,8 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype 
         dbdir = 'VantagePointDatabases_RedBlack'
         #open the redblacksearch database for that vantage point
         db = RedBlackSearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(closest_vantage_pt)))
+    else:
+        raise ValueError('dbtype %s not recognized'%dbtype)
 
     #find all light curves within 2d of the vantage point
     light_curves_in_radius = db.get_nodes_less_than(radius)
@@ -198,6 +203,8 @@ def similarity_program(arg, dbtype = 'rbstree'):
         dbdir = 'VantagePointDatabases'
     elif dbtype == 'rbstree':
         dbdir = 'VantagePointDatabases_RedBlack'
+    else:
+        raise ValueError('dbtype %s not recognized'%dbtype)
 
     vp = []
     with open('%s/vp'%dbdir) as f:
