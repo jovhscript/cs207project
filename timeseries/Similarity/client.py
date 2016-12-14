@@ -12,7 +12,6 @@ def fetch_byindex(ts_, n):
         print("Checking the closest timeseries in the database to {}".format(ts_))
     else:
         print("Checking the {} closest timeseries in the database to {}".format(n, ts_))
-    print (ts_)
     s.send("{}|{}|ind".format(ts_, str(n)).encode())
     print("Request sent to server")
     try:
