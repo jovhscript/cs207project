@@ -76,11 +76,11 @@ class server_tests(unittest.TestCase):
         
         ## note that the server finds timeseries and vintage points in the
         ## current directory and has access to the database there 
-        import pdb;pdb.set_trace()
         ts_interest = sdecode(ts_)
         tss_found = find_most_similiar(ts_interest, 1, vp, False, dbtype = 'rbstree')
-        jsondump = json.dumps(tss_found)
-        #assert toget[:len(jsondump)-2] == jsondump[:-2]
+        tss_found.insert(0, [0, 'itself', ts_interest.__json__()])
+        jsondump = json.dumps(tss_found, sort_keys = True)
+        assert toget[:len(jsondump)-2] == jsondump[:-2]
         assert kind == 'J'
 
     def test_indexError(self):

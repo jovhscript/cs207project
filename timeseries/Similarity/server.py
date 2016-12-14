@@ -1,6 +1,6 @@
 from socket import AF_INET, SOCK_STREAM, socket, SOL_SOCKET, SO_REUSEADDR
 from concurrent.futures import ThreadPoolExecutor
-import threadinfing
+import threading
 
 from BinarySearchDatabase import *
 import find_most_similiar
