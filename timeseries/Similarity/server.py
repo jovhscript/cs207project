@@ -59,7 +59,7 @@ def db_client(sock, client_addr, dbtype = 'rbstree'):
         if js:
             tss_to_return.insert(0, [0, 'itself', ts_interest.__json__()])
 
-        jsonencoded = json.dumps(tss_to_return).encode('utf-8')
+        jsonencoded = json.dumps(tss_to_return, sort_keys = True).encode('utf-8')
         tosend = (len(jsonencoded)).to_bytes(8, byteorder='little')+'J'.encode('utf-8')+jsonencoded
         sock.sendall(tosend)
     print('Client closed connection') 
