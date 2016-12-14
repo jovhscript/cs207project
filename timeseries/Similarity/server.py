@@ -1,6 +1,6 @@
 from socket import AF_INET, SOCK_STREAM, socket, SOL_SOCKET, SO_REUSEADDR
 from concurrent.futures import ThreadPoolExecutor
-import threading
+import threadinfing
 
 from BinarySearchDatabase import *
 import find_most_similiar
@@ -36,7 +36,9 @@ def db_client(sock, client_addr, dbtype = 'rbstree'):
         if js:
             tss_to_return = find_most_similiar.find_most_similiar(ts_interest, int(n), vp, False, dbtype)
         else:
+            #import pdb;pdb.set_trace()
             tss_to_return = find_most_similiar.find_most_similiar("GeneratedTimeseries/"+ts_interest, int(n), vp, dbtype)
+            #ans2 = find_most_similiar.sanity_check("GeneratedTimeseries/"+ts_interest, int(n))
         
         if isinstance(tss_to_return, str):
             print ('Error', tss_to_return)

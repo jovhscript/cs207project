@@ -17,6 +17,8 @@ import shutil
 from tsdb_error import *
 
 
+#currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
 def sanity_check(filename,n):
     """
     Function that manually finds the n most similiar timeseries to the given
@@ -63,7 +65,10 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype=
         #open the redblacksearch database for that vantage point
         db = RedBlackSearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(closest_vantage_pt)))
     else:
-        raise ValueError('dbtype %s not recognized'%dbtype)
+        #raise ValueError('dbtype %s not recognized'%dbtype)
+        print ("Database type %s not recognized"%dbtype)
+        return "ERROR DBTYPE | %s"%dbtype
+
 
     #open database for that vantage point
     
@@ -103,7 +108,9 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype 
         #open the redblacksearch database for that vantage point
         db = RedBlackSearchDatabase.connect("%s/%s.dbdb"%(dbdir, str(closest_vantage_pt)))
     else:
-        raise ValueError('dbtype %s not recognized'%dbtype)
+        #raise ValueError('dbtype %s not recognized'%dbtype)
+        print ("Database type %s not recognized"%dbtype)
+        return "ERROR DBTYPE | %s"%dbtype
 
     #find all light curves within 2d of the vantage point
     light_curves_in_radius = db.get_nodes_less_than(radius)
@@ -204,8 +211,9 @@ def similarity_program(arg, dbtype = 'rbstree'):
     elif dbtype == 'rbstree':
         dbdir = 'VantagePointDatabases_RedBlack'
     else:
-        raise ValueError('dbtype %s not recognized'%dbtype)
-
+        #raise ValueError('dbtype %s not recognized'%dbtype)
+        print ("Database type %s not recognized"%dbtype)
+        return "ERROR DBTYPE | %s"%dbtype
     vp = []
     with open('%s/vp'%dbdir) as f:
         for line in f:
