@@ -6,7 +6,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 #parentdir = os.path.dirname(os.path.dirname(currentdir))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
-
+import pdb
 import unittest
 from pytest import raises
 import numpy as np
@@ -58,6 +58,29 @@ class server_tests(unittest.TestCase):
         tss_found = find_most_similiar("GeneratedTimeseries/Timeseries200", 1, vp, dbtype = 'rbstree')
         jsondump = json.dumps(tss_found)
         assert toget[:len(jsondump)-2] == jsondump[:-2]
+        assert kind == 'J'
+
+    def test_findByUploadedJSON(self):
+        '''
+        Verify that the server receives the uploaded time series in a JSON file, 
+        finds similar time series, and return the correct one as expected.
+        '''
+        s = socket(AF_INET, SOCK_STREAM)
+        s.connect(('localhost', 15000))
+        ts_ = sencode('%s/Timeseries0.json'%parentdir)
+        s.send("{}|{}|json".format(ts_, 1).encode())
+        received = s.recv(9)
+        length = int.from_bytes(received[:8], byteorder='little')
+        kind = received[8:9].decode('utf-8')
+        toget = s.recv(length).decode('utf-8')
+        
+        ## note that the server finds timeseries and vintage points in the
+        ## current directory and has access to the database there 
+        import pdb;pdb.set_trace()
+        ts_interest = sdecode(ts_)
+        tss_found = find_most_similiar(ts_interest, 1, vp, False, dbtype = 'rbstree')
+        jsondump = json.dumps(tss_found)
+        #assert toget[:len(jsondump)-2] == jsondump[:-2]
         assert kind == 'J'
 
     def test_indexError(self):
