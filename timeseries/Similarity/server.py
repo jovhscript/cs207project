@@ -13,6 +13,21 @@ with open('VantagePointDatabases_RedBlack/vp') as f:
         vp.append(int(line.rstrip('\n'))) 
 
 def db_client(sock, client_addr, dbtype = 'rbstree'):
+    """
+    Function that connects to the client address, receives the requested
+    timeseries and number of closest matches, and sends back to the client
+    the list of timeseries found through the find_most_similar function
+
+    Parameters
+    ----------
+    sock: client socket
+    client_addr: client address
+    dbtype: the database to use. Choices includ:
+       'bstree' - binary search tree database
+       'rbstree' - red black search tree database
+    -----
+    """
+
     global vp
     print('Got connection from', client_addr) 
     while True:
