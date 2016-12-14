@@ -4,7 +4,23 @@ from concurrent.futures import ThreadPoolExecutor
 from tstojson import *
 import argparse
 from tsdb_error import *
+
 def fetch_byindex(ts_, n):
+    """
+    Function that connects to the server address, sends information on the 
+    requested timeseries in the form of an index and number of closest matches, 
+    and receives back the list of timeseries found by the server.
+
+    Parameters
+    ----------
+    ts_: the time series inquired
+    n: the number of similar time series requested
+
+    Returns
+    ----------
+    Outputs string of similar time series information as requested.
+    -----
+    """
     s = socket(AF_INET, SOCK_STREAM)
     # s.connect(('54.164.101.248', 80))
     s.connect(('localhost', 15000))
@@ -30,6 +46,22 @@ def fetch_byindex(ts_, n):
         return 'SHIT HAPPENED'
 
 def fetch_upload(ts_, n):
+    """
+    Function that connects to the server address, sends a json file that contains
+    the time series of interest and number of closest matches requested, 
+    and receives back the list of timeseries found by the server.
+
+    Parameters
+    ----------
+    ts_: the json file that contains the time series of interest
+    n: the number of similar time series requested
+
+    Returns
+    ----------
+    Outputs string of similar time series information as requested.
+    -----
+    """
+
     s = socket(AF_INET, SOCK_STREAM)
     # s.connect(('54.164.101.248', 80))
     try:
@@ -59,6 +91,17 @@ def fetch_upload(ts_, n):
         return 'SHIT HAPPENED (ASK RAHUL FOR THE JOKE)'
 
 def main(arguments):
+    """
+    Function that parases the arguments input by the client and extract the 
+    information on the index of the time series inquired or a jason file that
+    contains it, and the number of similar time series to look for.
+
+    Parameters
+    ----------
+    arguments: the arguments that the user puts in or command line arguments.
+    -----
+    """
+
     parser = argparse.ArgumentParser(description='Finding the n most similar timeseries')
     parser.add_argument('--i', help='Index of a timeseries in the db', type=str)
     parser.add_argument('--f', help='Path to a potential json', type=str)

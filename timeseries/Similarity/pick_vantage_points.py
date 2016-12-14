@@ -19,8 +19,17 @@ def pick_vantage_points(arg, dbtype = 'bstree'):
     The database stores (key,value) pairs where:
     key = distance from timeseries to vantage point (kernel coefficient)
     value = id of timeseries (0-999)
+
+    Parameters
+    ----------
+    args: the input argumet that containts the time series number
+    dbtype: the database to use. Choices includ:
+       'bstree' - binary search tree database
+       'rbstree' - red black search tree database
     
-    returns: list of vantage points (integers from 0-999)
+    Returns
+    ----------
+    list of vantage points (integers from 0-999)
     """
     try:
         parser = argparse.ArgumentParser(description="vantage points")

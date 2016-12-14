@@ -12,6 +12,10 @@ import os
 import pickle
 
 def generate_time_series():
+    """
+    A function that generates and stores 1000 time series whose values are
+    normally distributed
+    """
     try:
         shutil.rmtree('GeneratedTimeseries')
     except:

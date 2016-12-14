@@ -23,8 +23,11 @@ def sanity_check(filename,n):
     """
     Function that manually finds the n most similiar timeseries to the given
     timeseries. Serves as a check of the vantage point method
-    
-    Returns: list of n most similiar filenames 
+
+    Returns
+    ----------
+    A list of n most similiar filenames 
+    ----------
     """
     ans = []
     d = []
@@ -49,12 +52,20 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype=
     Given a vantage point and a radius, find the points that fall within the
     circle around the vantage point. Then calculates the distance from all of these
     points to the timeseries of interest.
-    
+
+    Parameters
+    ----------
     closest_vantage_pt: number of the vantage point being considered
     ts1: timeseries of interest
     radius: radius of circle to consider
-    
-    Returns: list of tuples (distance, timeseries id) in sorted order
+    dbtype: the database to use. Choices includ:
+       'bstree' - binary search tree database
+       'rbstree' - red black search tree database
+
+    Returns
+    ----------
+    A list of tuples (distance, timeseries id) in sorted order
+    ----------
     """
     if dbtype == 'bstree':
         dbdir = 'VantagePointDatabases'
@@ -92,11 +103,16 @@ def find_similarity_of_points_in_radius(closest_vantage_pt, ts1, radius, dbtype 
     circle around the vantage point. Then calculates the distance from all of these
     points to the timeseries of interest.
     
+    Parameters
+    ----------
     closest_vantage_pt: number of the vantage point being considered
     ts1: timeseries of interest
     radius: radius of circle to consider
-    
-    Returns: list of tuples (distance, timeseries id) in sorted order
+
+    Returns
+    ----------
+    A list of tuples (distance, timeseries id) in sorted order
+    -----
     """
 
     if dbtype == 'bstree':
@@ -135,6 +151,7 @@ def interpolate_to_match_input(ts_database, ts_input):
     ----------------
     ts_input: timeseries input by the client
     ts_database: the timeseries generated in the database
+    -----
     """
     ts_input_times = ts_input.times()
     ts_database_times = ts_database.times()
@@ -146,12 +163,22 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'rbstree')
     """
     Finds n most similiar time series to the time series of interest (filename)
     by using the supplied vantage points
-    
+
+    Parameters
+    ----------
     filename: timeseries of interest
     n: number of similiar timeseries to return (n must be between 1 and 20)
     vantage_pts: a list of the vantage point numbers 
+    isfile: boolean, whether the client input type is the indexed time series
+            name or a json file
+    dbtype: the database to use. Choices includ:
+       'bstree' - binary search tree database
+       'rbstree' - red black search tree database
     
-    Returns: list of n most similiar filenames
+    Returns
+    ----------
+    A list of n most similiar filenames
+    -----
     """
     
     file_names = []
@@ -205,7 +232,18 @@ def find_most_similiar(filename,n, vantage_pts, isfile=True, dbtype = 'rbstree')
     return file_names
 
 def similarity_program(arg, dbtype = 'rbstree'):
-    """This is a command line program that finds similiar timeseries"""
+    """
+    This is a command line program that finds similiar timeseries
+
+    Parameter
+    ----------------
+    arg: command line arguments
+    dbtype: the database to use. Choices includ:
+       'bstree' - binary search tree database
+       'rbstree' - red black search tree database
+    -----
+    """
+
     if dbtype == 'bstree':
         dbdir = 'VantagePointDatabases'
     elif dbtype == 'rbstree':
