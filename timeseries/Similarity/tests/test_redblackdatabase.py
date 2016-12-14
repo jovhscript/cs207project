@@ -64,7 +64,6 @@ class RedBlackDataBase_tests(unittest.TestCase):
             with open("GeneratedTimeseries/Timeseries"+str(1000), "rb") as f:
                 pickle.load(f)
             
-        
     def test_pick_vantage_points(self):
         vp = np.array(pick_vantage_points(20, dbtype='rbstree'))
         assert (vp >= 0).all() and (vp <= 999).all()
@@ -74,32 +73,33 @@ class RedBlackDataBase_tests(unittest.TestCase):
             
     def test_find_most_similiar(self):
         vp = []
+        
         with open('VantagePointDatabases_RedBlack/vp') as f:
             for line in f:
                 vp.append(int(line.rstrip('\n')))
 
         filename = "GeneratedTimeseries/Timeseries200"
         n = 20
-        ans = find_most_similiar(filename, n, vp)
+        #import pdb;pdb.set_trace()
+        ans = find_most_similiar(filename, n, vp, dbtype = 'rbstree')
         ans2 = sanity_check(filename,n)
 
-        ## the assertion here is slightly different from the one
-        ## in test_database since RedBlackSearchDatabase organizes
-        ## key/values differently from BinarySearchDatabase to keep
-        ## the tree balanced
-        assert np.sum([x[1] not in ans2[:19] for x in ans[1:]]) == 0
+        assert [x[1] for x in ans[1:]] == ans2[:19]
         
         filename = "GeneratedTimeseries/Timeseries932"
         n = 3
-        ans = find_most_similiar(filename, n, vp)
+        ans = find_most_similiar(filename, n, vp, dbtype = 'rbstree')
         ans2 = sanity_check(filename,n)
-        assert np.sum([x[1] not in ans2[:2] for x in ans[1:]])  == 0
+
+        assert [x[1] for x in ans[1:]]  == ans2[:2]    
         
         filename = "GeneratedTimeseries/Timeseries32"
         n = 5
-        ans = find_most_similiar(filename, n, vp)
+        ans = find_most_similiar(filename, n, vp, dbtype = 'rbstree')
         ans2 = sanity_check(filename,n)
-        assert np.sum([x[1] not in ans2[:4] for x in ans[1:]]) == 0
+        #import pdb;pdb.set_trace()
+
+        assert [x[1] for x in ans[1:]] == ans2[:4] 
                               
                                   
 if __name__=='__main__':

@@ -66,7 +66,7 @@ class DataBase_tests(unittest.TestCase):
             
         
     def test_pick_vantage_points(self):
-        vp = np.array(pick_vantage_points(20))
+        vp = np.array(pick_vantage_points(20, dbtype = 'bstree'))
         assert (vp >= 0).all() and (vp <= 999).all()
         for i in range(1000):
             db = BinarySearchDatabase.connect("VantagePointDatabases/"+str(i)+".dbdb")
@@ -80,19 +80,19 @@ class DataBase_tests(unittest.TestCase):
 
         filename = "GeneratedTimeseries/Timeseries200"
         n = 20
-        ans = find_most_similiar(filename, n, vp)
+        ans = find_most_similiar(filename, n, vp, dbtype = 'bstree')
         ans2 = sanity_check(filename,n)
         assert [x[1] for x in ans[1:]] == ans2[:19]
         
         filename = "GeneratedTimeseries/Timeseries932"
         n = 3
-        ans = find_most_similiar(filename, n, vp)
+        ans = find_most_similiar(filename, n, vp, dbtype = 'bstree')
         ans2 = sanity_check(filename,n)
         assert [x[1] for x in ans[1:]]  == ans2[:2]    
         
         filename = "GeneratedTimeseries/Timeseries32"
         n = 5
-        ans = find_most_similiar(filename, n, vp)
+        ans = find_most_similiar(filename, n, vp, dbtype = 'bstree')
         ans2 = sanity_check(filename,n)
         assert [x[1] for x in ans[1:]] == ans2[:4] 
                     
