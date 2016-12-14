@@ -1,19 +1,19 @@
 from flask import Flask, request, render_template, jsonify
 import find_most_similiar
 from tstojson import *
-
-# import meta_functions
+import meta_functions
 import client
 import os, shutil
 import pickle
 import logging
 
-
+# initiate flast app
 application = Flask(__name__)
 file_handler = logging.FileHandler(filename='error.log')
 file_handler.setLevel(logging.WARNING)
 application.logger.addHandler(file_handler)
 
+# add invalid usage handling
 class InvalidUsage(Exception):
     status_code = 400
 
@@ -29,23 +29,27 @@ class InvalidUsage(Exception):
         rv['message'] = self.message
         return rv
 
+# add error handling
 @application.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
 
+# render homepage
 @application.route("/")
 def home():
     return render_template('home.html')
 
+# render simsearch
 @application.route("/simsearch", methods=['GET', 'POST'])
 def indb():
     return render_template("index.html")
 
+# render simsearch with Post and Get method
 @application.route("/simsearch/", methods=['GET', 'POST'])
 def search_index():
-    if request.method == 'GET':
+    if request.method == 'GET': # take in i and n as parameters and search from simsearch
         i = request.args.get('id', '0', type=str)
         try:
             i = int(i)
@@ -57,7 +61,7 @@ def search_index():
         except:
             raise InvalidUsage('Number of neighbours must be a positive integer', status_code=400)
         res = client.fetch_byindex('Timeseries'+str(i), n+1)
-    elif request.method == 'POST':
+    elif request.method == 'POST': # post the new into vantage point
         # print(request.form.getlist('ts'))
         f=request.files['ts']
         try:
@@ -65,10 +69,10 @@ def search_index():
         except:
             raise InvalidUsage('Number of neighbours must be a positive integer', status_code=400)
         print(f, n)
-        if f.filename[-4:] != 'json':
+        if f.filename[-4:] != 'json': # check if the file is JSON
             raise InvalidUsage('Invalid File Type Supplied', status_code=400)
         try:
-            shutil.rmtree('tmp/')
+            shutil.rmtree('tmp/') # remove the tem file
         except:
             os.mkdir('tmp/')
         f.save('tmp/'+f.filename)
@@ -86,7 +90,7 @@ def meta():
 @application.route('/meta/', methods=['GET'])
 def get_all_meta():
     res = meta_functions.meta_get(meta_functions.engine)
-    toreturn = [res[0], [list(x) for x in res[1]]]
+    toreturn = [res[0], [list(x) for x in res[1]]] # final formatting of the output before returned
     return jsonify(result=toreturn)
 
 @application.route('/meta/filter', methods=['GET'])
@@ -97,11 +101,11 @@ def filter_meta():
     ms_flag = False
     stds = request.args.get('std_range', None, type=str)
     std_flag = False
-    
+
+    # format the input filters
     if ls != '':
         ls = ls.replace(' ','').split(',')
         ls_flag=True
-
     if ms != '':
         try:
             ms = [float(x) for x in ms.split(':')]
@@ -110,10 +114,8 @@ def filter_meta():
             raise InvalidUsage('Mean boundaries should be convertible to floats', status_code=400)
     else:
         ms = None
-
     if ls_flag and ms_flag:
         raise InvalidUsage('Select only one filter at a time', status_code=400)
-
     if stds != '':
         try:
             stds = [float(x) for x in stds.split(':')]
@@ -122,16 +124,17 @@ def filter_meta():
             raise InvalidUsage('Std boundaries should be convertible to floats', status_code=400)
     else:
         stds = None
-
+    # make sure only one filter at a time
     if (ls_flag and std_flag) or (ms_flag and std_flag):
         raise InvalidUsage('Select only one filter at a time', status_code=400)
     
     res = meta_functions.meta_filter(meta_functions.engine, [ls, ms, stds])
-    toreturn = [res[0], [list(x) for x in res[1]]]
+    toreturn = [res[0], [list(x) for x in res[1]]] # final formatting of the output before returned
     return jsonify(result=toreturn)
 
 @application.route('/meta/', methods=['POST'])
 def add_ts():
+    # create a temp JSON file to be added
     f=request.files['ts']
     if f.filename[-4:] != 'json':
         raise InvalidUsage('Invalid File Type Supplied', status_code=400)
@@ -146,6 +149,7 @@ def add_ts():
 
 @application.route('/meta/<int:id>', methods=['GET'])
 def get_ts(id):
+    # check if id is integer
     if not isinstance(id, int):
         raise InvalidUsage('Number of neighbours must be a integer', status_code=400)
     # return task_db.fetch_task(id)
